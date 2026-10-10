@@ -17,8 +17,8 @@ seguridad).
 | Cobertura del nivel seguro (p90) en el año | 88.9% | **90.2%** |
 | Meses en que gana | — | **9 de 10** (enero es la excepción) |
 
-- **Total del sistema calibrado:** pide en promedio **1.2 veces** lo que se usó (antes 1.9 veces al
-  sumar el p90 de cada estación) y alcanza el 87.5% de los días de julio a septiembre.
+- **Total del sistema calibrado:** pide en promedio **1.2 veces** lo que se usó y alcanza el 87.5% de
+  los días de julio a septiembre. Sumar el p90 de cada estación pediría 1.9 veces.
 - **A igual cobertura**, el modelo pide 3.0% menos bicis que la referencia en agosto y 7.7% menos en
   septiembre; en julio empatan (la referencia pide 1.2% menos).
 - **Anclas de validación:** Grove St PATH PM p90 = **96.9**; desbalance neto anual de Oakland Ave =
@@ -132,7 +132,7 @@ El mapa y el detalle por estación muestran julio a septiembre; las métricas cu
 | `routes.csv` | rutas estación-a-estación más usadas |
 | `weather_effect.csv` | necesidad con lluvia vs sin lluvia |
 | `weather_hourly.csv` / `weather_forecast_hourly.csv` | clima por hora: histórico y el pronóstico que usó el modelo |
-| `data.js` / `data_hourly.js` / `data_profiles.js` | los mismos datos como objetos JS (versión anterior del dashboard, sin servidor) |
+| `data.js` / `data_hourly.js` / `data_profiles.js` | los mismos datos como objetos JS, para usarlos sin servidor |
 
 ## Limitaciones
 
@@ -142,4 +142,4 @@ El mapa y el detalle por estación muestran julio a septiembre; las métricas cu
 - Enero es el mes más difícil (frío, nieve, pocos viajes): ahí la referencia gana.
 - Los viajes que llegan desde fuera de la zona (<1%) no están en la fuente.
 
-Consulta `CONTEXT.md` para el historial de trabajo y `PLAN_ML.md` para la metodología completa.
+Metodología completa en `PLAN_ML.md`.
