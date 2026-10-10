@@ -48,4 +48,4 @@ src/components/           layout/, map/ (Leaflet), charts/ (ECharts), panels/ (t
 
 - Base map tiles come from OpenStreetMap and need internet. Without it, markers still draw.
 - Derived fields added by the script: station status, weekday net flow per window, balance role, member and casual trips.
-- Hourly detail exists only for August and September 2026. Forecast days show a typical day from the full-year profile.
+- Hourly detail exists only for July to September 2026. Forecast days show a typical day from the full-year profile.
