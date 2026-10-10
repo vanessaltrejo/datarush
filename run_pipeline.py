@@ -50,10 +50,10 @@ def main():
     qc.info(f"primary model: {'lightgbm_weather' if use_weather else 'lightgbm'} (forced) "
             f"(bikes core={b_core:.0f}@{100*c_core:.0f}% vs wx={b_wx:.0f}@{100*c_wx:.0f}%)")
 
-    # --- Forecast mode (§8 step 11): reuse corte-2 model (train<=Aug 31, §7.4) ---
+    # --- Forecast mode (§8 step 11): train on all validated months (train<=Sep 30, §7.4) ---
     fc_preds = None
     try:
-        fc_train = window[window["date"] <= C.FOLDS[1]["train_end"]].dropna(subset=["necesidad_media_4sem"])
+        fc_train = window[window["date"] <= C.FORECAST_TRAIN_END].dropna(subset=["necesidad_media_4sem"])
         fc_model = train_lgbm(fc_train, use_weather, keys, qc)
         fc_preds = run_forecast(fc_model, window, use_weather, qc)
     except Exception as e:

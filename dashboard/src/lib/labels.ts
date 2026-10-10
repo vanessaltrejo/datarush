@@ -8,7 +8,7 @@ export const windowLabels: Record<WindowName, string> = {
 }
 
 export const modeLabels: Record<DashboardMode, string> = {
-  backtest: 'Datos pasados (1 ago a 30 sep)',
+  backtest: 'Datos pasados (1 jul a 30 sep)',
   forecast: 'Próximos días (10 a 17 oct)',
 }
 
@@ -73,6 +73,7 @@ export const modelLabels: Record<string, string> = {
 }
 
 export const foldLabels: Record<string, string> = {
-  fold1: 'Agosto 2026',
-  fold2: 'Septiembre 2026',
+  fold1: 'Julio 2026',
+  fold2: 'Agosto 2026',
+  fold3: 'Septiembre 2026',
 }

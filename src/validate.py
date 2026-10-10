@@ -81,7 +81,7 @@ def run_fold(panel, fold, all_keys, use_weather=False, qc=None):
                + _metrics_block(merged, model_name, fold["name"], "need_p50", "need_p90"))
 
     # §2.1 report HB107 separately in August.
-    if fold["name"] == "fold1":
+    if fold["test_start"].startswith("2026-08"):
         hb = merged[merged["station_key"].isin(C.REPORT_SEPARATELY_AUG)]
         if len(hb):
             metrics += _metrics_block(hb, f"{model_name}_HB107", fold["name"], "need_p50", "need_p90")

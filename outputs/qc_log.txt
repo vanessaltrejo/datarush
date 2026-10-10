@@ -17,46 +17,60 @@
 [info] [fold1] date separation train.max<test.min: True
 [info] [fold1] no 'mes' feature: True
 [info] [fold1] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=584 weather=False
+[info] lgbm alpha=0.9 best_iter=128 weather=False
+[info] CQR offset (alpha=0.9): +0.44
+[info] [fold2] date separation train.max<test.min: True
+[info] [fold2] no 'mes' feature: True
+[info] [fold2] lags present & >=24h (7d / 4wk): True
 [info] lgbm alpha=0.5 best_iter=445 weather=False
 [info] lgbm alpha=0.9 best_iter=265 weather=False
 [info] CQR offset (alpha=0.9): +0.30
-[info] [fold2] date separation train.max<test.min: True
-[info] [fold2] no 'mes' feature: True
-[info] [fold2] lags present & >=24h (7d / 4wk): True
+[info] [fold3] date separation train.max<test.min: True
+[info] [fold3] no 'mes' feature: True
+[info] [fold3] lags present & >=24h (7d / 4wk): True
 [info] lgbm alpha=0.5 best_iter=262 weather=False
 [info] lgbm alpha=0.9 best_iter=225 weather=False
 [info] CQR offset (alpha=0.9): +0.31
-[info] coverage lightgbm fold1: 90.1% | total_bikes=42754
-[info] coverage lightgbm fold2: 89.4% | total_bikes=41721
+[info] coverage lightgbm fold1: 90.1% | total_bikes=42991
+[info] coverage lightgbm fold2: 90.1% | total_bikes=42754
+[info] coverage lightgbm fold3: 89.4% | total_bikes=41721
 [info] [fold1] date separation train.max<test.min: True
 [info] [fold1] no 'mes' feature: True
 [info] [fold1] lags present & >=24h (7d / 4wk): True
-[info] lgbm alpha=0.5 best_iter=619 weather=True
-[info] lgbm alpha=0.9 best_iter=203 weather=True
-[info] CQR offset (alpha=0.9): +0.08
+[info] lgbm alpha=0.5 best_iter=591 weather=True
+[info] lgbm alpha=0.9 best_iter=294 weather=True
+[info] CQR offset (alpha=0.9): +0.11
 [info] [fold2] date separation train.max<test.min: True
 [info] [fold2] no 'mes' feature: True
 [info] [fold2] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=619 weather=True
+[info] lgbm alpha=0.9 best_iter=203 weather=True
+[info] CQR offset (alpha=0.9): +0.08
+[info] [fold3] date separation train.max<test.min: True
+[info] [fold3] no 'mes' feature: True
+[info] [fold3] lags present & >=24h (7d / 4wk): True
 [info] lgbm alpha=0.5 best_iter=186 weather=True
 [info] lgbm alpha=0.9 best_iter=249 weather=True
 [info] CQR offset (alpha=0.9): +0.18
-[info] coverage lightgbm_weather fold1: 90.6% | total_bikes=43687
-[info] coverage lightgbm_weather fold2: 89.4% | total_bikes=41654
-[info] primary model: lightgbm_weather (forced) (bikes core=42237@90% vs wx=42670@90%)
-[info] lgbm alpha=0.5 best_iter=186 weather=True
-[info] lgbm alpha=0.9 best_iter=249 weather=True
+[info] coverage lightgbm_weather fold1: 89.1% | total_bikes=42370
+[info] coverage lightgbm_weather fold2: 90.6% | total_bikes=43687
+[info] coverage lightgbm_weather fold3: 89.4% | total_bikes=41654
+[info] primary model: lightgbm_weather (forced) (bikes core=42489@90% vs wx=42570@90%)
+[info] lgbm alpha=0.5 best_iter=253 weather=True
+[info] lgbm alpha=0.9 best_iter=289 weather=True
 [info] CQR offset (alpha=0.9): +0.18
 [info] forecast grid rows=1705 stations=108 dates=8
 [info] inter-station profile corr median=0.726 (floor ref 0.744); segment sizes={'Morning-peak (h8)': 56, 'Evening-peak (h18)': 41, 'Evening-peak (h17)': 13, 'Morning-peak (h7)': 1}
-[info] predictions_hourly rows=156,440
+[info] predictions_hourly rows=236,048
 [info] wrote stations.csv rows=111
-[info] wrote predictions_window.csv rows=13,977
-[info] wrote metrics.csv rows=40
+[info] wrote predictions_window.csv rows=20,218
+[info] wrote metrics.csv rows=55
 [info] wrote profiles.csv rows=18,648
 [info] wrote routes.csv rows=200
 [info] wrote weather_effect.csv rows=222
-[info] wrote predictions_hourly.csv rows=156,440
+[info] wrote predictions_hourly.csv rows=236,048
 [info] wrote data.js, data_profiles.js, data_hourly.js
 [info] SANITY Grove St PATH PM p90: got 96.9 expected~97 (±3) -> OK
 [info] SANITY Oakland Ave annual net imbalance: got -1793.0 expected~-1807 (±150) -> OK
-[info] SANITY mean lightgbm coverage: got 92.2 expected~90 (±4) -> OK
+[info] SANITY mean lightgbm coverage: got 91.5 expected~90 (±4) -> OK

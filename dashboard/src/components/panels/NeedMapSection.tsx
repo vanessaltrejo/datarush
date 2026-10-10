@@ -121,7 +121,7 @@ export function NeedMapSection() {
       {mode === 'forecast' && (
         <Note>
           Pronóstico precargado con el modelo de septiembre y el pronóstico del clima. No hay datos reales para
-          compararlo. La calidad del modelo se mide con los datos pasados de agosto y septiembre.
+          compararlo. La calidad del modelo se mide con los datos pasados de julio, agosto y septiembre.
         </Note>
       )}
 

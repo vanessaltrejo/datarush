@@ -50,9 +50,12 @@ DST_COLLAPSE = ("2025-11-02", 1)  # fall-back: hour 1 occurs twice, collapsed. D
 
 # §5.3 temporal folds. train end inclusive; test month.
 FOLDS = [
-    {"name": "fold1", "train_end": "2026-07-31", "test_start": "2026-08-01", "test_end": "2026-08-31"},
-    {"name": "fold2", "train_end": "2026-08-31", "test_start": "2026-09-01", "test_end": "2026-09-30"},
+    {"name": "fold1", "train_end": "2026-06-30", "test_start": "2026-07-01", "test_end": "2026-07-31"},
+    {"name": "fold2", "train_end": "2026-07-31", "test_start": "2026-08-01", "test_end": "2026-08-31"},
+    {"name": "fold3", "train_end": "2026-08-31", "test_start": "2026-09-01", "test_end": "2026-09-30"},
 ]
+# §7.4 forecast model trains on every validated month (through the last fold's test end).
+FORECAST_TRAIN_END = FOLDS[-1]["test_end"]
 # Optional §5.3 third fold (low season) if time permits.
 FOLD_FEB = {"name": "fold_feb", "train_end": "2026-01-31", "test_start": "2026-02-01", "test_end": "2026-02-28"}
 

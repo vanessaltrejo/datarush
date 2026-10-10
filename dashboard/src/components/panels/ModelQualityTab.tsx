@@ -31,7 +31,7 @@ export function ModelQualityTab() {
   const hb107 = data.metrics.filter((row) => row.model === 'lightgbm_weather_HB107' && row.window === 'PM' && row.dayType === 'weekday')[0]
 
   const fairComparison = useMemo(
-    () => ['2026-08', '2026-09'].map((month) => equalCoverage(data.predictions, month)),
+    () => ['2026-07', '2026-08', '2026-09'].map((month) => equalCoverage(data.predictions, month)),
     [data.predictions],
   )
 
@@ -47,7 +47,7 @@ export function ModelQualityTab() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Card title="Comparación de modelos" subtitle="Validación temporal: agosto 2026 (entrena hasta julio) y septiembre 2026 (entrena hasta agosto). 107 estaciones evaluadas.">
+      <Card title="Comparación de modelos" subtitle="Validación temporal en tres cortes: julio 2026 (entrena hasta junio), agosto 2026 (entrena hasta julio) y septiembre 2026 (entrena hasta agosto). El pronóstico se entrena con todo hasta septiembre.">
         <SegmentedControl<Slice> label="Ventana y tipo de día" value={slice} onChange={setSlice} options={sliceOptions} />
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-sm">
@@ -92,17 +92,18 @@ export function ModelQualityTab() {
             <tbody className="tabular-nums">
               {fairComparison.map((result) => result && (
                 <tr key={result.month} className="border-t border-slate-100">
-                  <td className="py-1.5">{result.month === '2026-08' ? 'Agosto' : 'Septiembre'}</td>
+                  <td className="py-1.5">{({ '2026-07': 'Julio', '2026-08': 'Agosto', '2026-09': 'Septiembre' } as Record<string, string>)[result.month] ?? result.month}</td>
                   <td className="text-right">{formatPercent(result.modelCoverage)}</td>
                   <td className="text-right font-semibold">{formatInt(result.modelBikes)}</td>
                   <td className="text-right">{formatInt(result.baselineBikes)} <span className="block text-xs text-slate-500">+{result.baselineShift.toFixed(2)} por fila, cubre {formatPercent(result.baselineCoverage)}</span></td>
-                  <td className="text-right font-semibold text-brand-800">+{formatPercent(result.baselineBikes / result.modelBikes - 1)}</td>
+                  <td className="text-right font-semibold text-brand-800">{result.baselineBikes >= result.modelBikes ? '+' : ''}{formatPercent(result.baselineBikes / result.modelBikes - 1)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
           <p className="mt-3 text-sm text-slate-700">
-            Con la misma protección, el modelo pide menos bicis. Ese es el ahorro para el operador. La línea base sube en
+            En agosto y septiembre, con la misma protección, el modelo pide menos bicis. Ese es el ahorro para el operador.
+            En julio la línea base ya cubre más sin ajuste y pide un poco menos. La línea base sube en
             pasos de 0.01 y se toma el primer paso que iguala o pasa la cobertura del modelo.
           </p>
         </Card>
@@ -137,7 +138,7 @@ export function ModelQualityTab() {
             </li>
             <li>Línea base: cuantiles p50 y p90 de las últimas 8 semanas por estación, ventana y tipo de día.</li>
             <li>LightGBM: un modelo global de cuantiles (p50 y p90) con estación, día, festivo, rezagos y clima (Open-Meteo). El p90 se recalibra para cubrir cerca de 90%.</li>
-            <li>Validación temporal en dos cortes, sin mezclar fechas. Ningún dato del futuro: todos los rezagos tienen al menos 24 horas y no hay variable de mes.</li>
+            <li>Validación temporal en tres cortes (julio, agosto y septiembre), sin mezclar fechas. El pronóstico final se entrena con todos los meses validados. Ningún dato del futuro: todos los rezagos tienen al menos 24 horas y no hay variable de mes.</li>
           </ol>
         </Card>
         <Card title="Nota: Hudson Pl & Hoboken Terminal (HB107)">

@@ -26,7 +26,8 @@ Dos ventanas: **AM** 06:00–11:59 (vaciado residencial) y **PM** 14:00–19:59 
 - **LightGBM** — un regresor de cuantiles global (τ=0.5 y τ=0.9), estación como variable categórica,
   recalibración conforme (CQR) para que τ=0.9 quede cerca del 90% de cobertura. Variables de clima de Open-Meteo.
 
-Validado con dos cortes temporales (entrena→jul / prueba ago, entrena→ago / prueba sep). La métrica
+Validado con tres cortes temporales (entrena→jun / prueba jul, entrena→jul / prueba ago,
+entrena→ago / prueba sep). El modelo de pronóstico (10–17 oct) se entrena con todo hasta el 30 sep. La métrica
 principal es **bicicletas comprometidas a igual cobertura (~90%)** — la moneda del operador — no el MAE.
 
 ## Estructura del repositorio
@@ -78,7 +79,7 @@ conteo exacto esperado y se detiene si no cuadra, y al final verifica resultados
 
 - Los conteos de limpieza reproducen el spec exactamente (4 / 18 / 7 / 1535 / 4027 / 563 / 3048).
 - Grove St PATH PM p90 = **96.9**, desbalance neto anual de Oakland Ave = **−1,793** (anclas de validación).
-- A ~90% de cobertura, LightGBM le gana al baseline en MAE (1.88 vs 2.03) y en pinball; las bicicletas
+- A ~90% de cobertura, LightGBM le gana al baseline en MAE (promedio de 3 cortes: 1.88 vs 1.99; con clima 1.84) y en pinball; las bicicletas
   comprometidas quedan casi empatadas. El clima mejora el MAE ligeramente. La señal dominante es el
   nivel de 4 semanas — la demanda es rítmica, así que un promedio bien construido ya explica casi todo,
   y el valor está en el cuantil.

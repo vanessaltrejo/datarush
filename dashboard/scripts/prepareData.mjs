@@ -98,14 +98,14 @@ const hourly = mapRows(readCsv('predictions_hourly.csv'),
   ['departures_actual', 'departures_pred', 'departures_lo', 'departures_hi', 'net_flow_actual', 'net_flow_pred'])
 
 assertCount('stations', stations.length, 111)
-assertCount('predictions_window', predictions.length, 13977)
-assertCount('predictions backtest', predictions.filter((row) => row.mode === 'backtest').length, 12272)
+assertCount('predictions_window', predictions.length, 20218)
+assertCount('predictions backtest', predictions.filter((row) => row.mode === 'backtest').length, 18513)
 assertCount('predictions forecast', predictions.filter((row) => row.mode === 'forecast').length, 1705)
-assertCount('metrics', metrics.length, 40)
+assertCount('metrics', metrics.length, 55)
 assertCount('routes', routes.length, 200)
 assertCount('profiles', profiles.length, 18648)
 assertCount('weather_effect', weatherEffect.length, 222)
-assertCount('predictions_hourly', hourly.length, 156440)
+assertCount('predictions_hourly', hourly.length, 236048)
 
 // ---------- Derived station fields: status and balance role ----------
 

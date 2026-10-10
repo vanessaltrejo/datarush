@@ -99,7 +99,7 @@ export function StationPanel({ stationKey }: { stationKey: string }) {
       </div>
 
       {station.status === 'inactive' ? (
-        <div className="mt-4"><Note>Esta estación no tuvo actividad en agosto y septiembre. No hay pronóstico ni error.</Note></div>
+        <div className="mt-4"><Note>Esta estación no tuvo actividad de julio a septiembre. No hay pronóstico ni error.</Note></div>
       ) : (
         <>
           <h3 className="mt-6 text-lg font-semibold text-slate-900">
@@ -126,7 +126,7 @@ export function StationPanel({ stationKey }: { stationKey: string }) {
             <div>
               <h4 className="font-semibold text-slate-900">Necesidad por día e incertidumbre</h4>
               <p className="text-sm text-slate-500">
-                {mode === 'backtest' ? 'Validación, 1 ago a 30 sep 2026.' : 'Pronóstico, 10 a 17 oct 2026.'} La banda va del día típico (p50) a lo recomendado (p90).
+                {mode === 'backtest' ? 'Validación, 1 jul a 30 sep 2026.' : 'Pronóstico, 10 a 17 oct 2026.'} La banda va del día típico (p50) a lo recomendado (p90).
                 {mode === 'backtest' && ' Los puntos naranjas son días donde lo real pasó lo recomendado.'}
               </p>
               {series.length > 0 ? <NeedSeriesChart series={series} mode={mode} selectedDate={date} /> : <Note>Sin datos para esta ventana.</Note>}
@@ -160,7 +160,7 @@ export function StationPanel({ stationKey }: { stationKey: string }) {
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <div className="rounded-xl border border-slate-200 p-4">
               <h4 className="font-semibold text-slate-900">Error de esta estación</h4>
-              <p className="text-sm text-slate-500">Validación ago y sep 2026. MAE del día típico. Cobertura de lo recomendado (p90).</p>
+              <p className="text-sm text-slate-500">Validación jul, ago y sep 2026. MAE del día típico. Cobertura de lo recomendado (p90).</p>
               <table className="mt-2 w-full text-sm">
                 <thead><tr className="text-left text-slate-500"><th className="py-1">Ventana</th><th>MAE (bicis)</th><th>Cobertura</th></tr></thead>
                 <tbody className="tabular-nums">
