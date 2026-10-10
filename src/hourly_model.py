@@ -25,7 +25,7 @@ def _profiles(train):
 def predict_hourly(hourly_panel, qc=None):
     hp = hourly_panel.copy()
     out = []
-    for fold in C.FOLDS:
+    for fold in C.DISPLAY_FOLDS:
         train = hp[hp["date"] <= fold["train_end"]]
         test = hp[(hp["date"] >= fold["test_start"]) & (hp["date"] <= fold["test_end"])].copy()
         test = test[~test["station_key"].isin(C.EVAL_EXCLUDE)]

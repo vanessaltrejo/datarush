@@ -72,8 +72,10 @@ export const modelLabels: Record<string, string> = {
   lightgbm_weather: 'LightGBM + clima (modelo usado)',
 }
 
-export const foldLabels: Record<string, string> = {
-  fold1: 'Julio 2026',
-  fold2: 'Agosto 2026',
-  fold3: 'Septiembre 2026',
+const monthLabels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+
+// Folds are named by their test month, like '2026-07'.
+export function foldLabel(fold: string): string {
+  const match = /^(\d{4})-(\d{2})$/.exec(fold)
+  return match ? `${monthLabels[Number(match[2]) - 1]} ${match[1]}` : fold
 }

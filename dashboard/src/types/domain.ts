@@ -125,6 +125,18 @@ export interface DailyPoint {
   weatherSource: 'archive' | 'forecast',
 }
 
+// System-wide recommendation for one date and window: sum of station p50 times a factor
+// learned from past days. Summing station p90s would assume every station has its bad day at once.
+export interface SystemTotal {
+  date: string,
+  window: WindowName,
+  mode: DashboardMode,
+  sumP50: number,
+  factor: number,
+  systemP90: number,
+  actual: number | null,
+}
+
 export interface DashboardData {
   stations: Station[],
   predictions: WindowPrediction[],
@@ -135,4 +147,5 @@ export interface DashboardData {
   userType: UserTypeSummary,
   cleaning: CleaningSummary,
   daily: DailyPoint[],
+  systemTotals: SystemTotal[],
 }

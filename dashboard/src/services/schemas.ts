@@ -117,6 +117,16 @@ export const rawDailySchema = z.object({
   weather_source: z.enum(['archive', 'forecast']),
 })
 
+export const rawSystemTotalSchema = z.object({
+  date: z.string(),
+  window: z.enum(['AM', 'PM']),
+  mode: z.enum(['backtest', 'forecast']),
+  sum_p50: z.number(),
+  factor: z.number(),
+  system_p90: z.number(),
+  actual: z.number().nullable(),
+})
+
 export const cleaningSchema = z.object({
   rawTrips: z.number(),
   steps: z.array(z.object({ rule: z.string(), rows: z.number() })),

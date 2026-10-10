@@ -1,10 +1,10 @@
 import { z } from 'zod'
 import type {
-  CleaningSummary, DailyPoint, DashboardData, HourlyPoint, MetricRow, ProfileRow, Route, Station,
+  CleaningSummary, DailyPoint, DashboardData, SystemTotal, HourlyPoint, MetricRow, ProfileRow, Route, Station,
   UserTypeSummary, WeatherEffect, WindowPrediction,
 } from '@/types/domain'
 import {
-  cleaningSchema, rawDailySchema, rawHourlySchema, rawMetricSchema, rawPredictionSchema, rawProfileSchema,
+  cleaningSchema, rawDailySchema, rawHourlySchema, rawSystemTotalSchema, rawMetricSchema, rawPredictionSchema, rawProfileSchema,
   rawRouteSchema, rawStationSchema, rawWeatherEffectSchema, userTypeSchema,
 } from './schemas'
 
@@ -145,8 +145,20 @@ function toDaily(raw: z.output<typeof rawDailySchema>): DailyPoint {
   }
 }
 
+function toSystemTotal(raw: z.output<typeof rawSystemTotalSchema>): SystemTotal {
+  return {
+    date: raw.date,
+    window: raw.window,
+    mode: raw.mode,
+    sumP50: raw.sum_p50,
+    factor: raw.factor,
+    systemP90: raw.system_p90,
+    actual: raw.actual,
+  }
+}
+
 export async function loadDashboardData(): Promise<DashboardData> {
-  const [stations, predictions, metrics, routes, profiles, weatherEffects, userType, cleaning, daily] = await Promise.all([
+  const [stations, predictions, metrics, routes, profiles, weatherEffects, userType, cleaning, daily, systemTotals] = await Promise.all([
     loadValidated('stations.json', z.array(rawStationSchema)),
     loadValidated('predictions.json', z.array(rawPredictionSchema)),
     loadValidated('metrics.json', z.array(rawMetricSchema)),
@@ -156,6 +168,7 @@ export async function loadDashboardData(): Promise<DashboardData> {
     loadValidated('userType.json', userTypeSchema),
     loadValidated('cleaning.json', cleaningSchema),
     loadValidated('daily.json', z.array(rawDailySchema)),
+    loadValidated('systemTotals.json', z.array(rawSystemTotalSchema)),
   ])
   const userTypeSummary: UserTypeSummary = userType
   const cleaningSummary: CleaningSummary = cleaning
@@ -169,6 +182,7 @@ export async function loadDashboardData(): Promise<DashboardData> {
     userType: userTypeSummary,
     cleaning: cleaningSummary,
     daily: daily.map(toDaily),
+    systemTotals: systemTotals.map(toSystemTotal),
   }
 }
 

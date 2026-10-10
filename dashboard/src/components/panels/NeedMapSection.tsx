@@ -30,7 +30,10 @@ export function NeedMapSection() {
     () => predictionsByStation(data.predictions, mode, date, window),
     [data.predictions, mode, date, window],
   )
-  const totals = useMemo(() => systemTotals([...byStation.values()]), [byStation])
+  const stationTotals = useMemo(() => systemTotals([...byStation.values()]), [byStation])
+  // The system recommendation is the calibrated total, not the sum of every station's p90.
+  const systemRow = data.systemTotals.find((row) => row.mode === mode && row.date === date && row.window === window)
+  const totals = systemRow ? { ...stationTotals, safe: systemRow.systemP90 } : stationTotals
 
   // A click on a station opens its detail. In real full screen the drawer would be hidden, so leave it first.
   // The hint and the pulsing rings stay until the first click on a circle. After that the user knows.
@@ -174,14 +177,19 @@ export function NeedMapSection() {
             {mode === 'forecast' && (
               <Note>
                 Pronóstico con el modelo entrenado hasta septiembre y el pronóstico del clima. No hay datos reales para
-                compararlo. La calidad del modelo se mide con los datos pasados de julio, agosto y septiembre.
+                compararlo. La calidad del modelo se mide mes a mes, de diciembre 2025 a septiembre 2026.
               </Note>
             )}
             <div className="grid gap-4 lg:grid-cols-2">
               <StationFocusCard />
               <div className="grid grid-cols-2 content-start gap-3">
                 <Stat label="Total en un día típico" value={formatInt(totals.typical)} hint="bicis en todo el sistema (p50)" />
-                <Stat label="Total recomendado" value={formatInt(totals.safe)} hint="bicis, cubre 9 de cada 10 días (p90)" tone="accent" />
+                <Stat
+                  label="Total recomendado"
+                  value={formatInt(totals.safe)}
+                  hint={`bicis para todo el sistema, cubre cerca de 9 de cada 10 días. Sumar el p90 de cada estación daría ${formatInt(stationTotals.safe)}.`}
+                  tone="accent"
+                />
                 {mode === 'backtest' && (
                   <>
                     <Stat label="Lo que de verdad se necesitó" value={formatInt(totals.actual)} hint="dato real de ese día" />

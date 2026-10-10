@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { useDashboard } from '@/state/DashboardContext'
 import { Card, Note, SegmentedControl } from '@/components/layout/ui'
 import { formatInt, formatPercent } from '@/lib/format'
-import { foldLabels, modelLabels } from '@/lib/labels'
+import { foldLabel, modelLabels } from '@/lib/labels'
 import { equalCoverage } from '@/lib/selectors'
 
 type Slice = 'all|all' | 'AM|weekday' | 'AM|weekend' | 'PM|weekday' | 'PM|weekend'
@@ -47,7 +47,7 @@ export function ModelQualityTab() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Card title="Comparación de modelos" subtitle="Validación temporal en tres cortes: julio 2026 (entrena hasta junio), agosto 2026 (entrena hasta julio) y septiembre 2026 (entrena hasta agosto). El pronóstico se entrena con todo hasta septiembre.">
+      <Card title="Comparación de modelos" subtitle="Validación mes a mes, de diciembre 2025 a septiembre 2026: cada mes se predice con un modelo entrenado solo con los meses anteriores. El pronóstico se entrena con todo hasta septiembre.">
         <SegmentedControl<Slice> label="Ventana y tipo de día" value={slice} onChange={setSlice} options={sliceOptions} />
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-sm">
@@ -61,7 +61,7 @@ export function ModelQualityTab() {
             <tbody className="tabular-nums">
               {rows.map((row) => (
                 <tr key={`${row.fold}-${row.model}`} className={`border-t border-slate-100 ${row.model === 'lightgbm_weather' ? 'bg-brand-50 font-semibold' : ''}`}>
-                  <td className="py-2">{foldLabels[row.fold] ?? row.fold}</td>
+                  <td className="py-2">{foldLabel(row.fold)}</td>
                   <td>{modelLabels[row.model] ?? row.model}</td>
                   <td className="text-right">{row.mae.toFixed(2)}</td>
                   <td className="text-right">{row.rmse.toFixed(2)}</td>
@@ -138,7 +138,7 @@ export function ModelQualityTab() {
             </li>
             <li>Línea base: cuantiles p50 y p90 de las últimas 8 semanas por estación, ventana y tipo de día.</li>
             <li>LightGBM: un modelo global de cuantiles (p50 y p90) con estación, día, festivo, rezagos y clima (Open-Meteo). El p90 se recalibra para cubrir cerca de 90%.</li>
-            <li>Validación temporal en tres cortes (julio, agosto y septiembre), sin mezclar fechas. El pronóstico final se entrena con todos los meses validados. Ningún dato del futuro: todos los rezagos tienen al menos 24 horas y no hay variable de mes.</li>
+            <li>Validación temporal mes a mes (diciembre a septiembre), sin mezclar fechas. El pronóstico final se entrena con todos los meses validados. El total del sistema es la suma de los niveles típicos por un factor aprendido de las 12 semanas anteriores. Ningún dato del futuro: todos los rezagos tienen al menos 24 horas y no hay variable de mes.</li>
           </ol>
         </Card>
         <Card title="Nota: Hudson Pl & Hoboken Terminal (HB107)">

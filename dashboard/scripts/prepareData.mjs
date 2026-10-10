@@ -94,6 +94,7 @@ const metrics = mapRows(readCsv('metrics.csv'), ['mae', 'rmse', 'pinball', 'cove
 const routes = mapRows(readCsv('routes.csv'), ['trips', 'avg_duration_min'])
 const profiles = mapRows(readCsv('profiles.csv'), ['hour', 'day_of_week', 'avg_departures', 'avg_arrivals', 'avg_net'])
 const weatherEffect = mapRows(readCsv('weather_effect.csv'), ['avg_need_dry', 'avg_need_rain', 'pct_change', 'n_dry', 'n_rain'])
+const systemTotals = mapRows(readCsv('system_totals.csv'), ['sum_p50', 'factor', 'system_p90', 'actual'])
 const hourly = mapRows(readCsv('predictions_hourly.csv'),
   ['departures_actual', 'departures_pred', 'departures_lo', 'departures_hi', 'net_flow_actual', 'net_flow_pred'])
 
@@ -101,10 +102,11 @@ assertCount('stations', stations.length, 111)
 assertCount('predictions_window', predictions.length, 20218)
 assertCount('predictions backtest', predictions.filter((row) => row.mode === 'backtest').length, 18513)
 assertCount('predictions forecast', predictions.filter((row) => row.mode === 'forecast').length, 1705)
-assertCount('metrics', metrics.length, 55)
+assertCount('metrics', metrics.length, 160)
 assertCount('routes', routes.length, 200)
 assertCount('profiles', profiles.length, 18648)
 assertCount('weather_effect', weatherEffect.length, 222)
+assertCount('system_totals', systemTotals.length, 200)
 assertCount('predictions_hourly', hourly.length, 236048)
 
 // ---------- Derived station fields: status and balance role ----------
@@ -237,6 +239,7 @@ writeJson('weatherEffect.json', weatherEffect)
 writeJson('userType.json', { byHour: hourTotals, totalTrips: cleanRows })
 writeJson('cleaning.json', { rawTrips: rawRows, steps: cleaningSteps })
 writeJson('daily.json', daily)
+writeJson('systemTotals.json', systemTotals)
 
 const hourlyByStation = new Map()
 for (const row of hourly) {

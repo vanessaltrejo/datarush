@@ -1,6 +1,8 @@
 """Verified constants for the Citi Bike rebalancing pipeline. See PLAN_ML.md."""
 from pathlib import Path
 
+import pandas as pd
+
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT
 OUTPUT_DIR = ROOT / "outputs"
@@ -48,16 +50,26 @@ JC118_ID = "JC118"
 DST_DROP = ("2026-03-08", 2)      # spring-forward: hour 2 does not exist, do not fill.
 DST_COLLAPSE = ("2025-11-02", 1)  # fall-back: hour 1 occurs twice, collapsed. Declare only.
 
-# §5.3 temporal folds. train end inclusive; test month.
-FOLDS = [
-    {"name": "fold1", "train_end": "2026-06-30", "test_start": "2026-07-01", "test_end": "2026-07-31"},
-    {"name": "fold2", "train_end": "2026-07-31", "test_start": "2026-08-01", "test_end": "2026-08-31"},
-    {"name": "fold3", "train_end": "2026-08-31", "test_start": "2026-09-01", "test_end": "2026-09-30"},
-]
+# §5.3 temporal folds: one per month over the whole year (rolling origin). Each trains on
+# everything before its month and tests on that month. December is the first month with
+# enough history (October rows lack the 4-week lags).
+def _month_fold(month):
+    start = pd.Timestamp(month + "-01")
+    end = start + pd.offsets.MonthEnd(0)
+    return {"name": month, "train_end": (start - pd.Timedelta(days=1)).strftime("%Y-%m-%d"),
+            "test_start": start.strftime("%Y-%m-%d"), "test_end": end.strftime("%Y-%m-%d")}
+
+
+FOLDS = [_month_fold(m) for m in pd.period_range("2025-12", "2026-09", freq="M").astype(str)]
+# Only the last three months go to the dashboard map and hourly detail (keeps the files small).
+DISPLAY_FOLDS = FOLDS[-3:]
 # §7.4 forecast model trains on every validated month (through the last fold's test end).
 FORECAST_TRAIN_END = FOLDS[-1]["test_end"]
-# Optional §5.3 third fold (low season) if time permits.
-FOLD_FEB = {"name": "fold_feb", "train_end": "2026-01-31", "test_start": "2026-02-01", "test_end": "2026-02-28"}
+# System total: sum of station p50 times a factor that covers this share of past days.
+SYSTEM_COVERAGE = 0.9
+# The factor is learned from the past days in this many days before the scored month
+# (12 weeks: closest to 90% coverage in Jul-Sep), so winter swings do not inflate a summer factor.
+SYSTEM_LOOKBACK_DAYS = 84
 
 # §5.3 stations with no activity in the test window -> exclude from evaluation.
 EVAL_EXCLUDE = ["HB410", "JC104", "JC125", "JC147"]

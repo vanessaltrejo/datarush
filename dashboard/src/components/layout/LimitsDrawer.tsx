@@ -6,8 +6,8 @@ const limits = [
   'No conocemos la capacidad de anclajes. Grove St PATH puede necesitar cerca de 100 bicis, pero no sabemos si caben. Por eso el siguiente paso es el feed GBFS.',
   'El modelo predice el riesgo de estación vacía. No predice el riesgo de estación llena. "Se llena" es una tendencia del flujo neto pasado, no una predicción.',
   'Faltan las llegadas que vienen de fuera de las 114 estaciones (menos del 1% de los viajes).',
-  'Los días del pronóstico (10 a 17 oct) no se pueden verificar. La calidad del modelo viene de la validación de julio, agosto y septiembre.',
-  'Las métricas describen solo temporada alta (julio a septiembre).',
+  'Los días del pronóstico (10 a 17 oct) no se pueden verificar. La calidad del modelo viene de la validación mes a mes de diciembre 2025 a septiembre 2026.',
+  'Octubre y noviembre de 2025 no se evalúan: les falta historia para las pistas de 4 semanas. El mapa y el detalle por estación muestran julio a septiembre.',
   'Siguiente paso: conectar el feed en vivo GBFS de Citi Bike para tener inventario y capacidad por estación.',
 ]
 

@@ -14,63 +14,167 @@
 [info] window panel rows=67,739 | necesidad>0 in 67.3% of rows
 [info] weather hourly rows=8,784 (2025-09-30 00:00:00 .. 2026-09-30 23:00:00)
 [info] weather join: rows 67739->67739 (unchanged=True), missing temp=0
-[info] [fold1] date separation train.max<test.min: True
-[info] [fold1] no 'mes' feature: True
-[info] [fold1] lags present & >=24h (7d / 4wk): True
+[info] [2025-12] date separation train.max<test.min: True
+[info] [2025-12] no 'mes' feature: True
+[info] [2025-12] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=17 weather=False
+[info] lgbm alpha=0.9 best_iter=132 weather=False
+[info] CQR offset (alpha=0.9): -0.26
+[info] [2026-01] date separation train.max<test.min: True
+[info] [2026-01] no 'mes' feature: True
+[info] [2026-01] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=13 weather=False
+[info] lgbm alpha=0.9 best_iter=240 weather=False
+[info] CQR offset (alpha=0.9): -0.14
+[info] [2026-02] date separation train.max<test.min: True
+[info] [2026-02] no 'mes' feature: True
+[info] [2026-02] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=349 weather=False
+[info] lgbm alpha=0.9 best_iter=401 weather=False
+[info] CQR offset (alpha=0.9): +0.13
+[info] [2026-03] date separation train.max<test.min: True
+[info] [2026-03] no 'mes' feature: True
+[info] [2026-03] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=104 weather=False
+[info] lgbm alpha=0.9 best_iter=422 weather=False
+[info] CQR offset (alpha=0.9): -0.19
+[info] [2026-04] date separation train.max<test.min: True
+[info] [2026-04] no 'mes' feature: True
+[info] [2026-04] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=382 weather=False
+[info] lgbm alpha=0.9 best_iter=161 weather=False
+[info] CQR offset (alpha=0.9): +0.96
+[info] [2026-05] date separation train.max<test.min: True
+[info] [2026-05] no 'mes' feature: True
+[info] [2026-05] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=259 weather=False
+[info] lgbm alpha=0.9 best_iter=127 weather=False
+[info] CQR offset (alpha=0.9): +0.59
+[info] [2026-06] date separation train.max<test.min: True
+[info] [2026-06] no 'mes' feature: True
+[info] [2026-06] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=369 weather=False
+[info] lgbm alpha=0.9 best_iter=127 weather=False
+[info] CQR offset (alpha=0.9): +0.30
+[info] [2026-07] date separation train.max<test.min: True
+[info] [2026-07] no 'mes' feature: True
+[info] [2026-07] lags present & >=24h (7d / 4wk): True
 [info] lgbm alpha=0.5 best_iter=584 weather=False
 [info] lgbm alpha=0.9 best_iter=128 weather=False
 [info] CQR offset (alpha=0.9): +0.44
-[info] [fold2] date separation train.max<test.min: True
-[info] [fold2] no 'mes' feature: True
-[info] [fold2] lags present & >=24h (7d / 4wk): True
+[info] [2026-08] date separation train.max<test.min: True
+[info] [2026-08] no 'mes' feature: True
+[info] [2026-08] lags present & >=24h (7d / 4wk): True
 [info] lgbm alpha=0.5 best_iter=445 weather=False
 [info] lgbm alpha=0.9 best_iter=265 weather=False
 [info] CQR offset (alpha=0.9): +0.30
-[info] [fold3] date separation train.max<test.min: True
-[info] [fold3] no 'mes' feature: True
-[info] [fold3] lags present & >=24h (7d / 4wk): True
+[info] [2026-09] date separation train.max<test.min: True
+[info] [2026-09] no 'mes' feature: True
+[info] [2026-09] lags present & >=24h (7d / 4wk): True
 [info] lgbm alpha=0.5 best_iter=262 weather=False
 [info] lgbm alpha=0.9 best_iter=225 weather=False
 [info] CQR offset (alpha=0.9): +0.31
-[info] coverage lightgbm fold1: 90.1% | total_bikes=42991
-[info] coverage lightgbm fold2: 90.1% | total_bikes=42754
-[info] coverage lightgbm fold3: 89.4% | total_bikes=41721
-[info] [fold1] date separation train.max<test.min: True
-[info] [fold1] no 'mes' feature: True
-[info] [fold1] lags present & >=24h (7d / 4wk): True
+[info] coverage lightgbm 2025-12: 92.8% | total_bikes=33546
+[info] coverage lightgbm 2026-01: 88.0% | total_bikes=25309
+[info] coverage lightgbm 2026-02: 95.0% | total_bikes=21762
+[info] coverage lightgbm 2026-03: 82.3% | total_bikes=27189
+[info] coverage lightgbm 2026-04: 91.6% | total_bikes=39424
+[info] coverage lightgbm 2026-05: 91.1% | total_bikes=40264
+[info] coverage lightgbm 2026-06: 88.7% | total_bikes=40046
+[info] coverage lightgbm 2026-07: 90.1% | total_bikes=42991
+[info] coverage lightgbm 2026-08: 90.1% | total_bikes=42754
+[info] coverage lightgbm 2026-09: 89.4% | total_bikes=41721
+[info] [2025-12] date separation train.max<test.min: True
+[info] [2025-12] no 'mes' feature: True
+[info] [2025-12] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=14 weather=True
+[info] lgbm alpha=0.9 best_iter=134 weather=True
+[info] CQR offset (alpha=0.9): -0.17
+[info] [2026-01] date separation train.max<test.min: True
+[info] [2026-01] no 'mes' feature: True
+[info] [2026-01] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=15 weather=True
+[info] lgbm alpha=0.9 best_iter=176 weather=True
+[info] CQR offset (alpha=0.9): -0.05
+[info] [2026-02] date separation train.max<test.min: True
+[info] [2026-02] no 'mes' feature: True
+[info] [2026-02] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=588 weather=True
+[info] lgbm alpha=0.9 best_iter=138 weather=True
+[info] CQR offset (alpha=0.9): +0.50
+[info] [2026-03] date separation train.max<test.min: True
+[info] [2026-03] no 'mes' feature: True
+[info] [2026-03] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=164 weather=True
+[info] lgbm alpha=0.9 best_iter=425 weather=True
+[info] CQR offset (alpha=0.9): -0.06
+[info] [2026-04] date separation train.max<test.min: True
+[info] [2026-04] no 'mes' feature: True
+[info] [2026-04] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=983 weather=True
+[info] lgbm alpha=0.9 best_iter=327 weather=True
+[info] CQR offset (alpha=0.9): +0.59
+[info] [2026-05] date separation train.max<test.min: True
+[info] [2026-05] no 'mes' feature: True
+[info] [2026-05] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=131 weather=True
+[info] lgbm alpha=0.9 best_iter=272 weather=True
+[info] CQR offset (alpha=0.9): +0.15
+[info] [2026-06] date separation train.max<test.min: True
+[info] [2026-06] no 'mes' feature: True
+[info] [2026-06] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=385 weather=True
+[info] lgbm alpha=0.9 best_iter=233 weather=True
+[info] CQR offset (alpha=0.9): +0.02
+[info] [2026-07] date separation train.max<test.min: True
+[info] [2026-07] no 'mes' feature: True
+[info] [2026-07] lags present & >=24h (7d / 4wk): True
 [info] lgbm alpha=0.5 best_iter=591 weather=True
 [info] lgbm alpha=0.9 best_iter=294 weather=True
 [info] CQR offset (alpha=0.9): +0.11
-[info] [fold2] date separation train.max<test.min: True
-[info] [fold2] no 'mes' feature: True
-[info] [fold2] lags present & >=24h (7d / 4wk): True
+[info] [2026-08] date separation train.max<test.min: True
+[info] [2026-08] no 'mes' feature: True
+[info] [2026-08] lags present & >=24h (7d / 4wk): True
 [info] lgbm alpha=0.5 best_iter=619 weather=True
 [info] lgbm alpha=0.9 best_iter=203 weather=True
 [info] CQR offset (alpha=0.9): +0.08
-[info] [fold3] date separation train.max<test.min: True
-[info] [fold3] no 'mes' feature: True
-[info] [fold3] lags present & >=24h (7d / 4wk): True
+[info] [2026-09] date separation train.max<test.min: True
+[info] [2026-09] no 'mes' feature: True
+[info] [2026-09] lags present & >=24h (7d / 4wk): True
 [info] lgbm alpha=0.5 best_iter=186 weather=True
 [info] lgbm alpha=0.9 best_iter=249 weather=True
 [info] CQR offset (alpha=0.9): +0.18
-[info] coverage lightgbm_weather fold1: 89.1% | total_bikes=42370
-[info] coverage lightgbm_weather fold2: 90.6% | total_bikes=43687
-[info] coverage lightgbm_weather fold3: 89.4% | total_bikes=41654
-[info] primary model: lightgbm_weather (forced) (bikes core=42489@90% vs wx=42570@90%)
+[info] coverage lightgbm_weather 2025-12: 92.3% | total_bikes=31739
+[info] coverage lightgbm_weather 2026-01: 85.2% | total_bikes=22809
+[info] coverage lightgbm_weather 2026-02: 95.6% | total_bikes=21192
+[info] coverage lightgbm_weather 2026-03: 86.3% | total_bikes=29158
+[info] coverage lightgbm_weather 2026-04: 92.1% | total_bikes=41443
+[info] coverage lightgbm_weather 2026-05: 91.1% | total_bikes=41386
+[info] coverage lightgbm_weather 2026-06: 90.1% | total_bikes=41977
+[info] coverage lightgbm_weather 2026-07: 89.1% | total_bikes=42370
+[info] coverage lightgbm_weather 2026-08: 90.6% | total_bikes=43687
+[info] coverage lightgbm_weather 2026-09: 89.4% | total_bikes=41654
+[info] primary model: lightgbm_weather (forced) (bikes core=35501@90% vs wx=35741@90%)
 [info] lgbm alpha=0.5 best_iter=253 weather=True
 [info] lgbm alpha=0.9 best_iter=289 weather=True
 [info] CQR offset (alpha=0.9): +0.18
 [info] forecast grid rows=1705 stations=108 dates=8
 [info] inter-station profile corr median=0.726 (floor ref 0.744); segment sizes={'Morning-peak (h8)': 56, 'Evening-peak (h18)': 41, 'Evening-peak (h17)': 13, 'Morning-peak (h7)': 1}
 [info] predictions_hourly rows=236,048
+[info] system total lookback=all: coverage=98.4% | total/actual=1.47
+[info] system total lookback=84: coverage=87.5% | total/actual=1.21
+[info] system total lookback=56: coverage=84.8% | total/actual=1.18
+[info] system total lookback=28: coverage=84.2% | total/actual=1.18
+[info] system total: coverage on display months=87.5% | system_p90/actual=1.21 | factors {('backtest', 'AM'): 1.24, ('backtest', 'PM'): 1.46, ('forecast', 'AM'): 1.28, ('forecast', 'PM'): 1.42}
 [info] wrote stations.csv rows=111
 [info] wrote predictions_window.csv rows=20,218
-[info] wrote metrics.csv rows=55
+[info] wrote metrics.csv rows=160
 [info] wrote profiles.csv rows=18,648
 [info] wrote routes.csv rows=200
 [info] wrote weather_effect.csv rows=222
+[info] wrote system_totals.csv rows=200
 [info] wrote predictions_hourly.csv rows=236,048
 [info] wrote data.js, data_profiles.js, data_hourly.js
 [info] SANITY Grove St PATH PM p90: got 96.9 expected~97 (±3) -> OK
 [info] SANITY Oakland Ave annual net imbalance: got -1793.0 expected~-1807 (±150) -> OK
-[info] SANITY mean lightgbm coverage: got 91.5 expected~90 (±4) -> OK
+[info] SANITY mean lightgbm coverage: got 90.7 expected~90 (±4) -> OK

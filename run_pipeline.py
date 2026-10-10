@@ -16,6 +16,7 @@ from model_lgbm import train_lgbm
 from forecast_mode import run_forecast
 from hourly_model import predict_hourly
 from segments import segment_stations, build_profiles
+from system_total import system_totals
 import export
 
 
@@ -67,8 +68,11 @@ def main():
     hourly_preds = predict_hourly(hourly, qc)
 
     # --- Assemble output contract (§7) ---
-    station_tbl = export.station_table(stations, hourly, primary_preds, segments_df)
-    pw_tbl = export.predictions_window_table(primary_preds, fc_preds)
+    # Metrics cover every monthly fold; the map and station detail show only the last months.
+    display_preds = primary_preds[primary_preds["date"] >= C.DISPLAY_FOLDS[0]["test_start"]]
+    station_tbl = export.station_table(stations, hourly, display_preds, segments_df)
+    pw_tbl = export.predictions_window_table(display_preds, fc_preds)
+    system_tbl = system_totals(primary_preds, fc_preds, qc)
     tables = {
         "stations": station_tbl,
         "predictions_window": pw_tbl,
@@ -76,6 +80,7 @@ def main():
         "profiles": profiles_df,
         "routes": routes_df,
         "weather_effect": weather_fx,
+        "system_totals": system_tbl,
     }
     export.write_all(tables, hourly_preds, qc)
 
