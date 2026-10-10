@@ -34,6 +34,7 @@ export function Stat({ label, value, hint, tone = 'default' }: {
 export interface SegmentOption<T extends string> {
   value: T,
   label: string,
+  hint?: string,
 }
 
 export function SegmentedControl<T extends string>({ label, options, value, onChange }: {
@@ -54,6 +55,7 @@ export function SegmentedControl<T extends string>({ label, options, value, onCh
               type="button"
               role="radio"
               aria-checked={active}
+              title={option.hint}
               onClick={() => onChange(option.value)}
               className={`whitespace-nowrap rounded-md px-2.5 py-1.5 text-sm font-medium transition ${
                 active ? 'bg-white text-brand-900 shadow' : 'text-slate-600 hover:text-slate-900'}`}

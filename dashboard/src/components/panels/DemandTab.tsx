@@ -3,13 +3,13 @@
 import { useMemo, useState } from 'react'
 import { useDashboard } from '@/state/DashboardContext'
 import { Card, SegmentedControl, Stat } from '@/components/layout/ui'
+import { RoleActionsCard } from './RoleActionsCard'
 import { ClientMap } from '@/components/map/MapLoader'
 import type { LineSpec, MarkerSpec } from '@/components/map/LeafletMap'
 import { DemandHeatmap, TopStationsChart, UserTypeChart } from '@/components/charts/DemandCharts'
 import { formatInt, formatOneDecimal, formatPercent, formatSignedPercent } from '@/lib/format'
-import { balanceRoleAction, balanceRoleKey, balanceRoleLabel, balanceRoleOrder, segmentActionLabel, segmentLabel } from '@/lib/labels'
+import { balanceRoleKey, balanceRoleOrder } from '@/lib/labels'
 import { departuresHeatmap, peakShare, stationName, weatherSummary } from '@/lib/selectors'
-import type { BalanceRole } from '@/types/domain'
 
 type RouteCount = '10' | '25' | '50'
 
@@ -83,21 +83,41 @@ export function DemandTab() {
       <section>
         <h2 className="text-xl font-bold text-slate-900">Dónde se concentra la demanda</h2>
         <div className="mt-3 grid gap-4 xl:grid-cols-[400px_minmax(0,1fr)]">
-          <Card title="Estaciones más usadas" subtitle="Salidas en todo el año (oct 2025 a sep 2026)">
-            <TopStationsChart names={topStations.map((station) => station.name)} values={topStations.map((station) => station.totalDeparturesYear)} />
-          </Card>
-          <Card title="Rutas más usadas" subtitle="Viajes entre estaciones en todo el año. Grosor de la línea: número de viajes.">
-            <div className="mb-3">
-              <SegmentedControl<RouteCount>
-                label="Rutas a mostrar"
-                value={routeCount}
-                onChange={setRouteCount}
-                options={[{ value: '10', label: 'Top 10' }, { value: '25', label: 'Top 25' }, { value: '50', label: 'Top 50' }]}
+          <section className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="text-lg font-semibold text-slate-900">Estaciones más usadas</h3>
+            <p className="mt-0.5 text-sm text-slate-500">Salidas en todo el año (oct 2025 a sep 2026)</p>
+            {/* The chart fills the card, so there is no empty space under it. */}
+            <div className="mt-4 min-h-[360px] flex-1">
+              <TopStationsChart
+                names={topStations.map((station) => station.name)}
+                values={topStations.map((station) => station.totalDeparturesYear)}
+                height="100%"
               />
             </div>
-            <ClientMap markers={markers} lines={lines} height={420} />
+          </section>
+          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            {/* Title on the left, route count on the right corner, so no row is wasted. */}
+            <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
+              <div className="min-w-0">
+                <h3 className="text-lg font-semibold text-slate-900">Rutas más usadas</h3>
+                <p className="mt-0.5 text-sm text-slate-500">
+                  Viajes entre estaciones en todo el año. Grosor de la línea: número de viajes.
+                </p>
+              </div>
+              <div className="shrink-0">
+                <SegmentedControl<RouteCount>
+                  label="Rutas a mostrar"
+                  value={routeCount}
+                  onChange={setRouteCount}
+                  options={[{ value: '10', label: 'Top 10' }, { value: '25', label: 'Top 25' }, { value: '50', label: 'Top 50' }]}
+                />
+              </div>
+            </div>
+            <div className="mt-4">
+              <ClientMap markers={markers} lines={lines} height={440} />
+            </div>
             <p className="mt-2 text-xs text-slate-500">Las rutas que empiezan y terminan en la misma estación están en la tabla, pero no se dibujan.</p>
-          </Card>
+          </section>
         </div>
         <Card className="mt-4" title={`Tabla de las ${routeCount} rutas más usadas`} subtitle="Todo el año (oct 2025 a sep 2026)">
           <div className="max-h-80 overflow-y-auto">
@@ -142,35 +162,7 @@ export function DemandTab() {
       <section>
         <h2 className="text-xl font-bold text-slate-900">Qué causa la necesidad, y qué hacer en cada caso</h2>
         <div className="mt-3 grid gap-4 xl:grid-cols-2">
-          <Card title="Tipo de estación: acción distinta para cada rol" subtitle="Rol según el flujo neto promedio entre semana (perfiles de todo el año). Más de 3 bicis netas: se llena. Menos de -3: se vacía.">
-            <table className="w-full text-sm">
-              <thead className="text-left text-slate-500"><tr><th className="py-1.5">Rol</th><th className="text-right">Estaciones</th><th className="pl-4">Acción sugerida</th></tr></thead>
-              <tbody>
-                {roleGroups.map((group) => {
-                  const role: BalanceRole = group.members[0].balanceRole
-                  const example = [...group.members].sort((a, b) => b.totalDeparturesYear - a.totalDeparturesYear)[0]
-                  return (
-                    <tr key={group.key} className="border-t border-slate-100 align-top">
-                      <td className="py-2">
-                        <div className="font-medium text-slate-900">{balanceRoleLabel(role)}</div>
-                        <div className="text-xs text-slate-500">Ej. {example.name}</div>
-                      </td>
-                      <td className="py-2 text-right font-semibold tabular-nums">{group.members.length}</td>
-                      <td className="py-2 pl-4 text-slate-700">{balanceRoleAction(role)}</td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-            <h4 className="mt-4 font-semibold text-slate-900">Segmentos del modelo (KMeans sobre el perfil de 24 horas)</h4>
-            <ul className="mt-1 space-y-1 text-sm text-slate-700">
-              {segmentGroups.map((group) => (
-                <li key={group.segment}>
-                  <span className="font-medium">{segmentLabel(group.segment)}</span>: {group.count} estaciones. {segmentActionLabel(group.action)}
-                </li>
-              ))}
-            </ul>
-          </Card>
+          <RoleActionsCard roleGroups={roleGroups} segmentGroups={segmentGroups} totalStations={data.stations.length} />
 
           <div className="flex flex-col gap-4">
             <Card title="Clima: la lluvia baja la necesidad" subtitle={`Todo el año. ${weather.combinations} combinaciones de estación y ventana del archivo weather_effect.csv.`}>
@@ -184,13 +176,18 @@ export function DemandTab() {
                 En días de lluvia se puede reabastecer menos, sobre todo en la mañana.
               </p>
             </Card>
-            <Card title="Hora y tipo de usuario" subtitle="Viajes por hora de inicio, todo el año. Miembros contra ocasionales.">
-              <UserTypeChart byHour={data.userType.byHour} />
+            <section className="flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 className="text-lg font-semibold text-slate-900">Hora y tipo de usuario</h3>
+              <p className="mt-0.5 text-sm text-slate-500">Viajes por hora de inicio, todo el año. Miembros contra ocasionales.</p>
+              {/* The chart takes the free height, so both columns end at the same line. */}
+              <div className="mt-4 min-h-[300px] flex-1">
+                <UserTypeChart byHour={data.userType.byHour} height="100%" />
+              </div>
               <p className="mt-2 text-sm text-slate-700">
                 Los miembros marcan los picos de traslado al trabajo (8 am y 5 a 6 pm). Las estaciones de traslado necesitan
                 reabasto puntual antes del pico.
               </p>
-            </Card>
+            </section>
           </div>
         </div>
       </section>

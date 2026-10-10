@@ -31,3 +31,33 @@ body {
 .leaflet-tile-pane {
   filter: grayscale(1) brightness(1.05) contrast(0.9);
 }
+
+@keyframes drawer-in {
+  from { transform: translateX(40px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.drawer-in {
+  animation: drawer-in 0.2s ease-out;
+}
+
+/* Halo around the stations that can be clicked. */
+@keyframes pulse-ring {
+  0% { stroke-width: 2px; stroke-opacity: 0.9; }
+  100% { stroke-width: 16px; stroke-opacity: 0; }
+}
+
+.pulse-ring {
+  animation: pulse-ring 1.8s ease-out infinite;
+  pointer-events: none;
+}
+
+/* The label on the map moves a little so the eye finds it. */
+@keyframes hint-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+.hint-bob {
+  animation: hint-bob 1.6s ease-in-out infinite;
+}

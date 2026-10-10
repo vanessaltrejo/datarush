@@ -6,7 +6,7 @@ import type { EChartsOption } from 'echarts'
 
 interface EChartProps {
   option: EChartsOption,
-  height?: number,
+  height?: number | string,
   ariaLabel: string,
 }
 

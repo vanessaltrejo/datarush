@@ -27,8 +27,8 @@ export function NeedSeriesChart({ series, mode, selectedDate }: NeedSeriesChartP
       legend: {
         top: 0,
         textStyle: { fontSize: 13 },
-        data: ['Rango típico a seguro', 'Seguro (p90)', 'Típico (p50)',
-          ...(mode === 'backtest' ? ['Real', 'Línea base segura', 'Real arriba del nivel seguro'] : [])],
+        data: ['Rango típico a recomendado', 'Recomendado (p90)', 'Día típico (p50)',
+          ...(mode === 'backtest' ? ['Real', 'Línea base (p90)', 'Real arriba de lo recomendado'] : [])],
       },
       tooltip: { trigger: 'axis', valueFormatter: (value) => (typeof value === 'number' ? value.toFixed(1) : String(value ?? 'sin dato')) },
       xAxis: {
@@ -43,17 +43,17 @@ export function NeedSeriesChart({ series, mode, selectedDate }: NeedSeriesChartP
           lineStyle: { opacity: 0 }, symbol: 'none', tooltip: { show: false }, silent: true,
         },
         {
-          name: 'Rango típico a seguro', type: 'line', stack: 'band',
+          name: 'Rango típico a recomendado', type: 'line', stack: 'band',
           data: series.map((row) => Math.max(0, row.needP90 - row.needP50)),
           lineStyle: { opacity: 0 }, symbol: 'none', areaStyle: { color: chartColors.p90Band },
           itemStyle: { color: chartColors.p90Band }, tooltip: { show: false },
         },
         {
-          name: 'Típico (p50)', type: 'line', data: series.map((row) => row.needP50),
+          name: 'Día típico (p50)', type: 'line', data: series.map((row) => row.needP50),
           lineStyle: { color: chartColors.p50, width: 1.5, type: 'dotted' }, itemStyle: { color: chartColors.p50 }, symbol: 'none',
         },
         {
-          name: 'Seguro (p90)', type: 'line', data: series.map((row) => row.needP90),
+          name: 'Recomendado (p90)', type: 'line', data: series.map((row) => row.needP90),
           lineStyle: { color: chartColors.p90, width: 2 }, itemStyle: { color: chartColors.p90 }, symbol: 'none',
           markLine: {
             silent: true, symbol: 'none', lineStyle: { color: '#9ca3af', type: 'solid' },
@@ -62,7 +62,7 @@ export function NeedSeriesChart({ series, mode, selectedDate }: NeedSeriesChartP
         },
         ...(mode === 'backtest' ? [
           {
-            name: 'Línea base segura', type: 'line' as const, data: series.map((row) => row.baselineP90),
+            name: 'Línea base (p90)', type: 'line' as const, data: series.map((row) => row.baselineP90),
             lineStyle: { color: chartColors.baseline, width: 1, type: 'dashed' as const },
             itemStyle: { color: chartColors.baseline }, symbol: 'none',
           },
@@ -72,7 +72,7 @@ export function NeedSeriesChart({ series, mode, selectedDate }: NeedSeriesChartP
             symbol: 'circle', symbolSize: 4,
           },
           {
-            name: 'Real arriba del nivel seguro', type: 'scatter' as const, data: misses,
+            name: 'Real arriba de lo recomendado', type: 'scatter' as const, data: misses,
             itemStyle: { color: chartColors.miss }, symbolSize: 10, z: 10,
           },
         ] : []),

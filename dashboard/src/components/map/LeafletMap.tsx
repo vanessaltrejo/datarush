@@ -2,6 +2,7 @@
 
 import 'leaflet/dist/leaflet.css'
 import { useEffect } from 'react'
+import type { CircleMarker as LeafletCircleMarker } from 'leaflet'
 import { CircleMarker, MapContainer, Polyline, TileLayer, Tooltip, useMap } from 'react-leaflet'
 
 export interface MarkerSpec {
@@ -25,6 +26,8 @@ interface LeafletMapProps {
   markers: MarkerSpec[],
   lines?: LineSpec[],
   selectedKey?: string | null,
+  // Stations that get a pulsing ring to show that they can be clicked.
+  pulseKeys?: string[],
   onSelect?: (key: string) => void,
   height: number | string,
 }
@@ -44,7 +47,9 @@ function ResizeSync() {
 }
 
 // Base map tiles need internet. If they fail, markers still draw on the plain background.
-export default function LeafletMap({ markers, lines = [], selectedKey = null, onSelect, height }: LeafletMapProps) {
+export default function LeafletMap({
+  markers, lines = [], selectedKey = null, pulseKeys = [], onSelect, height,
+}: LeafletMapProps) {
   return (
     <MapContainer
       center={mapCenter}
@@ -66,21 +71,44 @@ export default function LeafletMap({ markers, lines = [], selectedKey = null, on
           <Tooltip sticky>{line.tooltip}</Tooltip>
         </Polyline>
       ))}
+      {markers.filter((marker) => pulseKeys.includes(marker.key)).map((marker) => (
+        <CircleMarker
+          key={`pulse-${marker.key}`}
+          center={[marker.lat, marker.lng]}
+          radius={marker.radius + 2}
+          interactive={false}
+          className="pulse-ring"
+          pathOptions={{ color: '#015cab', weight: 3, fill: false }}
+        />
+      ))}
       {markers.map((marker) => {
         const isSelected = marker.key === selectedKey
+        const baseColor = isSelected ? '#111827' : marker.muted ? '#9ca3af' : '#4b5563'
+        const baseWeight = isSelected ? 3 : 1
         return (
           <CircleMarker
             key={marker.key}
             center={[marker.lat, marker.lng]}
             radius={isSelected ? marker.radius + 3 : marker.radius}
             pathOptions={{
-              color: isSelected ? '#111827' : marker.muted ? '#9ca3af' : '#4b5563',
-              weight: isSelected ? 3 : 1,
+              color: baseColor,
+              weight: baseWeight,
               fillColor: marker.color,
               fillOpacity: marker.muted ? 0.45 : 0.9,
               dashArray: marker.muted ? '3 3' : undefined,
             }}
-            eventHandlers={onSelect ? { click: () => onSelect(marker.key) } : undefined}
+            eventHandlers={onSelect ? {
+              click: () => onSelect(marker.key),
+              mouseover: (event) => {
+                const circle = event.target as LeafletCircleMarker
+                // Only the style changes. Moving the element in the DOM would break the click.
+                circle.setStyle({ color: '#015cab', weight: 4 })
+              },
+              mouseout: (event) => {
+                const circle = event.target as LeafletCircleMarker
+                circle.setStyle({ color: baseColor, weight: baseWeight })
+              },
+            } : undefined}
           >
             <Tooltip direction="top" offset={[0, -4]}>{marker.tooltip}</Tooltip>
           </CircleMarker>

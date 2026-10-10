@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import { loadDashboardData } from '@/services/dataService'
-import { DashboardProvider, useDashboard } from '@/state/DashboardContext'
+import { DashboardProvider } from '@/state/DashboardContext'
 import type { DashboardData } from '@/types/domain'
 import { LimitsDrawer } from './LimitsDrawer'
 import { Sidebar, type TabName } from './Sidebar'
 import { NeedControls } from '@/components/panels/NeedControls'
 import { NeedMapSection } from '@/components/panels/NeedMapSection'
-import { StationPanel } from '@/components/panels/StationPanel'
+import { StationDrawer } from '@/components/panels/StationDrawer'
 import { DemandTab } from '@/components/panels/DemandTab'
 import { ModelQualityTab } from '@/components/panels/ModelQualityTab'
 
@@ -53,7 +53,6 @@ function initialCollapsed(): boolean {
 }
 
 function DashboardShell() {
-  const { selectedStationKey } = useDashboard()
   const [tab, setTab] = useState<TabName>('needs')
   const [limitsOpen, setLimitsOpen] = useState(false)
   const [collapsed, setCollapsed] = useState<boolean>(initialCollapsed)
@@ -102,9 +101,6 @@ function DashboardShell() {
             <>
               <NeedControls />
               <NeedMapSection />
-              {selectedStationKey
-                ? <StationPanel stationKey={selectedStationKey} />
-                : <p className="text-center text-slate-500">Haz clic en una estación del mapa o del top 10 para ver su detalle e incertidumbre.</p>}
             </>
           )}
           {tab === 'demand' && <DemandTab />}
@@ -118,6 +114,7 @@ function DashboardShell() {
       </div>
 
       <LimitsDrawer open={limitsOpen} onClose={() => setLimitsOpen(false)} />
+      <StationDrawer />
     </div>
   )
 }

@@ -48,7 +48,7 @@ export function FullscreenFrame({ title, subtitle, footer, children }: Fullscree
   return (
     <div
       ref={frameRef}
-      className={expanded ? 'fixed inset-0 z-[3000] flex flex-col gap-3 bg-white p-5' : ''}
+      className={expanded ? 'fixed inset-0 z-[3000] flex flex-col gap-3 bg-white p-5' : 'flex min-h-0 flex-1 flex-col'}
     >
       {expanded && (
         <div>
@@ -57,7 +57,7 @@ export function FullscreenFrame({ title, subtitle, footer, children }: Fullscree
         </div>
       )}
 
-      <div className={`relative ${expanded ? 'flex min-h-0 flex-1 flex-col' : ''}`}>
+      <div className="relative flex min-h-0 flex-1 flex-col">
         {children(expanded)}
         <button
           type="button"

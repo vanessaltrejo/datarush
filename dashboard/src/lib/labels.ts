@@ -8,8 +8,8 @@ export const windowLabels: Record<WindowName, string> = {
 }
 
 export const modeLabels: Record<DashboardMode, string> = {
-  backtest: 'Validación (1 ago a 30 sep)',
-  forecast: 'Pronóstico (10 a 17 oct)',
+  backtest: 'Datos pasados (1 ago a 30 sep)',
+  forecast: 'Próximos días (10 a 17 oct)',
 }
 
 export const statusLabels: Record<StationStatus, string> = {

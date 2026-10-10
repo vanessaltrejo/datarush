@@ -9,7 +9,7 @@ import type { UserTypeHour } from '@/types/domain'
 
 const hourLabels = Array.from({ length: 24 }, (_, hour) => `${hour}`)
 
-export function TopStationsChart({ names, values }: { names: string[], values: number[] }) {
+export function TopStationsChart({ names, values, height = 360 }: { names: string[], values: number[], height?: number | string }) {
   const option = useMemo<EChartsOption>(() => ({
     textStyle: baseTextStyle,
     grid: { left: 8, right: 56, top: 8, bottom: 8, containLabel: true },
@@ -22,7 +22,7 @@ export function TopStationsChart({ names, values }: { names: string[], values: n
       name: 'Salidas',
     }],
   }), [names, values])
-  return <EChart option={option} height={360} ariaLabel="Estaciones con más salidas en el año" />
+  return <EChart option={option} height={height} ariaLabel="Estaciones con más salidas en el año" />
 }
 
 // Hour (0-23) by weekday heatmap of average departures.
@@ -57,7 +57,7 @@ export function DemandHeatmap({ matrix }: { matrix: number[][] }) {
   return <EChart option={option} height={340} ariaLabel="Mapa de calor de salidas por hora y día" />
 }
 
-export function UserTypeChart({ byHour }: { byHour: UserTypeHour[] }) {
+export function UserTypeChart({ byHour, height = 300 }: { byHour: UserTypeHour[], height?: number | string }) {
   const option = useMemo<EChartsOption>(() => ({
     textStyle: baseTextStyle,
     grid: { left: 56, right: 16, top: 40, bottom: 36 },
@@ -70,5 +70,5 @@ export function UserTypeChart({ byHour }: { byHour: UserTypeHour[] }) {
       { name: 'Ocasionales', type: 'bar', stack: 'users', data: byHour.map((row) => row.casual), itemStyle: { color: chartColors.casual } },
     ],
   }), [byHour])
-  return <EChart option={option} height={300} ariaLabel="Viajes por hora y tipo de usuario" />
+  return <EChart option={option} height={height} ariaLabel="Viajes por hora y tipo de usuario" />
 }

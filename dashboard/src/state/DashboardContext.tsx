@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
 import type { BacktestView, DashboardData, DashboardMode, NeedLevel, WindowName } from '@/types/domain'
-import { datesForMode } from '@/lib/selectors'
+import { datesForMode, topStationKey } from '@/lib/selectors'
 
 interface DashboardState {
   data: DashboardData,
@@ -12,13 +12,17 @@ interface DashboardState {
   level: NeedLevel,
   backtestView: BacktestView,
   selectedStationKey: string | null,
+  detailOpen: boolean,
   availableDates: string[],
   setMode: (mode: DashboardMode) => void,
   setDate: (date: string) => void,
   setWindow: (window: WindowName) => void,
   setLevel: (level: NeedLevel) => void,
   setBacktestView: (view: BacktestView) => void,
-  selectStation: (stationKey: string | null) => void,
+  // Puts a station in focus and opens its detail drawer.
+  focusStation: (stationKey: string) => void,
+  closeDetail: () => void,
+  openDetail: () => void,
 }
 
 const DashboardContext = createContext<DashboardState | null>(null)
@@ -33,7 +37,6 @@ export function DashboardProvider({ data, children }: { data: DashboardData, chi
   const [window, setWindow] = useState<WindowName>('PM')
   const [level, setLevel] = useState<NeedLevel>('p90')
   const [backtestView, setBacktestView] = useState<BacktestView>('predicted')
-  const [selectedStationKey, selectStation] = useState<string | null>(null)
 
   const datesByMode = useMemo(() => ({
     backtest: datesForMode(data.predictions, 'backtest'),
@@ -41,6 +44,18 @@ export function DashboardProvider({ data, children }: { data: DashboardData, chi
   }), [data.predictions])
 
   const [date, setDate] = useState<string>(() => defaultDate(datesByMode.backtest))
+  // A station is in focus from the start: the one with the highest need on the default day.
+  const [selectedStationKey, setSelectedStationKey] = useState<string | null>(
+    () => topStationKey(data.predictions, 'backtest', defaultDate(datesByMode.backtest), 'PM', 'p90'),
+  )
+  const [detailOpen, setDetailOpen] = useState(false)
+
+  const focusStation = useCallback((stationKey: string) => {
+    setSelectedStationKey(stationKey)
+    setDetailOpen(true)
+  }, [])
+  const closeDetail = useCallback(() => setDetailOpen(false), [])
+  const openDetail = useCallback(() => setDetailOpen(true), [])
 
   const setMode = useCallback((nextMode: DashboardMode) => {
     setModeState(nextMode)
@@ -56,14 +71,17 @@ export function DashboardProvider({ data, children }: { data: DashboardData, chi
     level,
     backtestView,
     selectedStationKey,
+    detailOpen,
     availableDates: datesByMode[mode],
     setMode,
     setDate,
     setWindow,
     setLevel,
     setBacktestView,
-    selectStation,
-  }), [data, mode, date, window, level, backtestView, selectedStationKey, datesByMode, setMode])
+    focusStation,
+    closeDetail,
+    openDetail,
+  }), [data, mode, date, window, level, backtestView, selectedStationKey, detailOpen, datesByMode, setMode, focusStation, closeDetail, openDetail])
 
   return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>
 }

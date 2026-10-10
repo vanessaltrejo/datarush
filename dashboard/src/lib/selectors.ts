@@ -161,3 +161,20 @@ export function equalCoverage(predictions: WindowPrediction[], monthPrefix: stri
 export function stationName(stations: Station[], stationKey: string): string {
   return stations.find((station) => station.stationKey === stationKey)?.name ?? stationKey
 }
+
+// Station with the highest need for one date and window. Used as the station in focus on load.
+export function topStationKey(
+  predictions: WindowPrediction[], mode: DashboardMode, date: string, window: WindowName, level: NeedLevel,
+): string | null {
+  let bestKey: string | null = null
+  let bestValue = -1
+  for (const row of predictions) {
+    if (row.mode !== mode || row.date !== date || row.window !== window) continue
+    const value = needValue(row, level)
+    if (value > bestValue) {
+      bestValue = value
+      bestKey = row.stationKey
+    }
+  }
+  return bestKey
+}

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useDashboard } from '@/state/DashboardContext'
 import { loadStationHourly } from '@/services/dataService'
-import { Badge, Card, Note, Stat } from '@/components/layout/ui'
+import { Badge, Note, Stat } from '@/components/layout/ui'
 import { NeedSeriesChart } from '@/components/charts/NeedSeriesChart'
 import { HourlyDayChart, TypicalDayChart } from '@/components/charts/HourlyChart'
 import { dayOfWeekMonday, formatDateLong, formatInt, formatOneDecimal, formatPercent, formatSigned, formatSignedPercent } from '@/lib/format'
@@ -38,7 +38,7 @@ function useStationHourly(stationKey: string, enabled: boolean): HourlyState | n
 }
 
 export function StationPanel({ stationKey }: { stationKey: string }) {
-  const { data, mode, date, window, selectStation } = useDashboard()
+  const { data, mode, date, window, closeDetail } = useDashboard()
   const station = data.stations.find((item) => item.stationKey === stationKey)
   const hourlyEnabled = mode === 'backtest' && station?.status === 'active'
   const hourly = useStationHourly(stationKey, hourlyEnabled)
@@ -59,7 +59,7 @@ export function StationPanel({ stationKey }: { stationKey: string }) {
   const statusTone = station.status === 'active' ? 'default' : station.status === 'new' ? 'warn' : 'muted'
 
   return (
-    <Card>
+    <div className="p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex flex-wrap items-center gap-2">
@@ -72,8 +72,12 @@ export function StationPanel({ stationKey }: { stationKey: string }) {
             {totalTrips > 0 && ` ${formatPercent(station.memberTrips / totalTrips, 0)} de miembros.`}
           </p>
         </div>
-        <button type="button" onClick={() => selectStation(null)} className="rounded-md px-3 py-1 text-slate-600 hover:bg-slate-100">
-          Cerrar
+        <button
+          type="button"
+          onClick={closeDetail}
+          className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+        >
+          Cerrar (Esc)
         </button>
       </div>
 
@@ -103,12 +107,12 @@ export function StationPanel({ stationKey }: { stationKey: string }) {
           </h3>
           {dayRow ? (
             <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
-              <Stat label="Típico (p50)" value={formatOneDecimal(dayRow.needP50)} hint="bicis" />
-              <Stat label="Seguro (p90)" value={formatOneDecimal(dayRow.needP90)} hint="bicis recomendadas" tone="accent" />
+              <Stat label="Día típico (p50)" value={formatOneDecimal(dayRow.needP50)} hint="bicis" />
+              <Stat label="Recomendado (p90)" value={formatOneDecimal(dayRow.needP90)} hint="bicis recomendadas" tone="accent" />
               <Stat label="Real" value={mode === 'backtest' ? formatInt(dayRow.needActual) : 'sin verificar'} tone={mode === 'backtest' ? 'default' : 'muted'} />
-              <Stat label="Línea base segura" value={mode === 'backtest' ? formatOneDecimal(dayRow.baselineP90) : 'sin dato'} tone="muted" />
+              <Stat label="Línea base (p90)" value={mode === 'backtest' ? formatOneDecimal(dayRow.baselineP90) : 'sin dato'} tone="muted" />
               <Stat
-                label="¿Alcanzó el nivel seguro?"
+                label="¿Alcanzó la recomendación?"
                 value={dayRow.covered === null ? 'sin verificar' : dayRow.covered ? 'Sí' : 'No'}
                 hint={dayRow.rain ? 'Ventana con lluvia' : 'Ventana sin lluvia'}
                 tone={dayRow.covered === false ? 'accent' : 'default'}
@@ -122,8 +126,8 @@ export function StationPanel({ stationKey }: { stationKey: string }) {
             <div>
               <h4 className="font-semibold text-slate-900">Necesidad por día e incertidumbre</h4>
               <p className="text-sm text-slate-500">
-                {mode === 'backtest' ? 'Validación, 1 ago a 30 sep 2026.' : 'Pronóstico, 10 a 17 oct 2026.'} La banda va del nivel típico al seguro.
-                {mode === 'backtest' && ' Los puntos naranjas son días donde lo real pasó el nivel seguro.'}
+                {mode === 'backtest' ? 'Validación, 1 ago a 30 sep 2026.' : 'Pronóstico, 10 a 17 oct 2026.'} La banda va del día típico (p50) a lo recomendado (p90).
+                {mode === 'backtest' && ' Los puntos naranjas son días donde lo real pasó lo recomendado.'}
               </p>
               {series.length > 0 ? <NeedSeriesChart series={series} mode={mode} selectedDate={date} /> : <Note>Sin datos para esta ventana.</Note>}
               {station.status === 'new' && <Note>Estación nueva (abrió el 30 ago 2026). Solo tiene pronóstico, sin validación.</Note>}
@@ -156,7 +160,7 @@ export function StationPanel({ stationKey }: { stationKey: string }) {
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <div className="rounded-xl border border-slate-200 p-4">
               <h4 className="font-semibold text-slate-900">Error de esta estación</h4>
-              <p className="text-sm text-slate-500">Validación ago y sep 2026. MAE del nivel típico. Cobertura del nivel seguro.</p>
+              <p className="text-sm text-slate-500">Validación ago y sep 2026. MAE del día típico. Cobertura de lo recomendado (p90).</p>
               <table className="mt-2 w-full text-sm">
                 <thead><tr className="text-left text-slate-500"><th className="py-1">Ventana</th><th>MAE (bicis)</th><th>Cobertura</th></tr></thead>
                 <tbody className="tabular-nums">
@@ -179,6 +183,6 @@ export function StationPanel({ stationKey }: { stationKey: string }) {
           </div>
         </>
       )}
-    </Card>
+    </div>
   )
 }

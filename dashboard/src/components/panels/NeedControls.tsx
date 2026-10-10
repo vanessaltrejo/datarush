@@ -18,8 +18,8 @@ export function NeedControls() {
         value={mode}
         onChange={setMode}
         options={[
-          { value: 'backtest', label: modeLabels.backtest },
-          { value: 'forecast', label: modeLabels.forecast },
+          { value: 'backtest', label: modeLabels.backtest, hint: 'Compara lo que el modelo predijo con lo que de verdad pasó' },
+          { value: 'forecast', label: modeLabels.forecast, hint: 'Predicción para fechas futuras. No hay datos reales para comparar' },
         ]}
       />
       <label className="flex flex-col gap-1">
@@ -35,16 +35,19 @@ export function NeedControls() {
         </select>
       </label>
       <SegmentedControl<WindowName>
-        label="Ventana"
+        label="Horario"
         value={window}
         onChange={setWindow}
         options={[{ value: 'AM', label: 'Mañana 6–12 h' }, { value: 'PM', label: 'Tarde 14–20 h' }]}
       />
       <SegmentedControl<NeedLevel>
-        label="Nivel"
+        label="Protección"
         value={level}
         onChange={setLevel}
-        options={[{ value: 'p90', label: 'Seguro (p90)' }, { value: 'p50', label: 'Típico (p50)' }]}
+        options={[
+          { value: 'p90', label: 'Alta (p90)', hint: 'La recomendación alcanza 9 de cada 10 días' },
+          { value: 'p50', label: 'Media (p50)', hint: 'La recomendación alcanza la mitad de los días' },
+        ]}
       />
       {mode === 'backtest' && (
         <SegmentedControl<BacktestView>
