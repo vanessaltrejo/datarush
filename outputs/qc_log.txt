@@ -1,0 +1,62 @@
+[info] loaded 972,092 raw rows from 12 files
+[rule1_no_start_id] rows=4 expected=4
+[rule2_dup_ride_id] rows=18 expected=18 | Apr-30 rows in both Apr and May files
+[rule3_bad_duration] rows=7 expected=7
+[rule4_recovered_end_id] rows=1535 expected=1535
+[rule5_no_dest] rows=4027 expected=4027 | kept as departures, excluded from arrivals
+[info] distinct start stations: 114
+[rule6_arrival_over_24h] rows=563 expected=563 | max 26.0 h
+[rule7_arrival_outside_114] rows=3048 expected=3048 | destinations only in Manhattan
+[info] circular trips kept (origin=dest): 35,199 (3.62%)
+[info] station_keys after unification: 111
+[info] DST spring-forward cells dropped (2026-03-08 h2): 106
+[info] hourly panel rows=915,071 | zero cells (salidas==0)=59.4%
+[info] window panel rows=67,739 | necesidad>0 in 67.3% of rows
+[info] weather hourly rows=8,784 (2025-09-30 00:00:00 .. 2026-09-30 23:00:00)
+[info] weather join: rows 67739->67739 (unchanged=True), missing temp=0
+[info] [fold1] date separation train.max<test.min: True
+[info] [fold1] no 'mes' feature: True
+[info] [fold1] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=445 weather=False
+[info] lgbm alpha=0.9 best_iter=265 weather=False
+[info] CQR offset (alpha=0.9): +0.30
+[info] [fold2] date separation train.max<test.min: True
+[info] [fold2] no 'mes' feature: True
+[info] [fold2] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=262 weather=False
+[info] lgbm alpha=0.9 best_iter=225 weather=False
+[info] CQR offset (alpha=0.9): +0.31
+[info] coverage lightgbm fold1: 90.1% | total_bikes=42754
+[info] coverage lightgbm fold2: 89.4% | total_bikes=41721
+[info] [fold1] date separation train.max<test.min: True
+[info] [fold1] no 'mes' feature: True
+[info] [fold1] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=619 weather=True
+[info] lgbm alpha=0.9 best_iter=203 weather=True
+[info] CQR offset (alpha=0.9): +0.08
+[info] [fold2] date separation train.max<test.min: True
+[info] [fold2] no 'mes' feature: True
+[info] [fold2] lags present & >=24h (7d / 4wk): True
+[info] lgbm alpha=0.5 best_iter=186 weather=True
+[info] lgbm alpha=0.9 best_iter=249 weather=True
+[info] CQR offset (alpha=0.9): +0.18
+[info] coverage lightgbm_weather fold1: 90.6% | total_bikes=43687
+[info] coverage lightgbm_weather fold2: 89.4% | total_bikes=41654
+[info] primary model: lightgbm_weather (forced) (bikes core=42237@90% vs wx=42670@90%)
+[info] lgbm alpha=0.5 best_iter=186 weather=True
+[info] lgbm alpha=0.9 best_iter=249 weather=True
+[info] CQR offset (alpha=0.9): +0.18
+[info] forecast grid rows=1705 stations=108 dates=8
+[info] inter-station profile corr median=0.726 (floor ref 0.744); segment sizes={'Morning-peak (h8)': 56, 'Evening-peak (h18)': 41, 'Evening-peak (h17)': 13, 'Morning-peak (h7)': 1}
+[info] predictions_hourly rows=156,440
+[info] wrote stations.csv rows=111
+[info] wrote predictions_window.csv rows=13,977
+[info] wrote metrics.csv rows=40
+[info] wrote profiles.csv rows=18,648
+[info] wrote routes.csv rows=200
+[info] wrote weather_effect.csv rows=222
+[info] wrote predictions_hourly.csv rows=156,440
+[info] wrote data.js, data_profiles.js, data_hourly.js
+[info] SANITY Grove St PATH PM p90: got 96.9 expected~97 (±3) -> OK
+[info] SANITY Oakland Ave annual net imbalance: got -1793.0 expected~-1807 (±150) -> OK
+[info] SANITY mean lightgbm coverage: got 92.2 expected~90 (±4) -> OK
