@@ -1,0 +1,1 @@
+{"rawTrips":972092,"steps":[{"rule":"rule1_no_start_id","rows":4},{"rule":"rule2_dup_ride_id","rows":18},{"rule":"rule3_bad_duration","rows":7},{"rule":"rule4_recovered_end_id","rows":1535},{"rule":"rule5_no_dest","rows":4027},{"rule":"rule6_arrival_over_24h","rows":563},{"rule":"rule7_arrival_outside_114","rows":3048}]}

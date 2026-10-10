@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/* Light theme only: the dashboard is shown on a projector. */
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+}
+
+/* Citi Bike brand blue (#015cab) as the main accent. */
+@theme {
+  --color-brand-50: #eaf4fd;
+  --color-brand-100: #d3e8f9;
+  --color-brand-700: #015cab;
+  --color-brand-800: #014a8a;
+  --color-brand-900: #06305a;
+  --color-citi-orange: #f04c25;
+  /* Darker Citi Bike blue for the sidebar. */
+  --color-brand-sidebar: #03396f;
+}
+
+body {
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+.leaflet-tooltip {
+  font-size: 14px;
+}
+
+/* Gray base map so the need colors stand out. */
+.leaflet-tile-pane {
+  filter: grayscale(1) brightness(1.05) contrast(0.9);
+}
