@@ -75,9 +75,15 @@ def join_window_weather(window_panel, qc=None, use_cache=True):
     return out
 
 
+_FORECAST_CACHE = C.OUTPUT_DIR / "weather_forecast_hourly.csv"
+
+
 def fetch_forecast_weather(start, end):
-    """§7.4 forecast endpoint for future dates. Aggregated to windows."""
-    return _aggregate_to_windows(_fetch(FORECAST_URL, start, end))
+    """§7.4 forecast endpoint for future dates. Aggregated to windows.
+    The hourly series is saved so the dashboard shows the same weather the forecast used."""
+    hourly = _fetch(FORECAST_URL, start, end)
+    hourly.to_csv(_FORECAST_CACHE, index=False)
+    return _aggregate_to_windows(hourly)
 
 
 if __name__ == "__main__":

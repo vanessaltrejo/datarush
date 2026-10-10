@@ -131,6 +131,7 @@ if (rawFiles.length !== 12) throw new Error(`Expected 12 raw trip files, found $
 const seenRideIds = new Set()
 const hourTotals = Array.from({ length: 24 }, (_, hour) => ({ hour, member: 0, casual: 0 }))
 const stationUserTotals = new Map()
+const tripsByDate = new Map()
 let rawRows = 0
 let cleanRows = 0
 
@@ -146,6 +147,8 @@ for (const fileName of rawFiles) {
     // Times share one text format, so text comparison keeps the order.
     if (trip.ended_at <= trip.started_at) continue
     cleanRows += 1
+    const tripDate = trip.started_at.slice(0, 10)
+    tripsByDate.set(tripDate, (tripsByDate.get(tripDate) ?? 0) + 1)
     const hour = Number(trip.started_at.slice(11, 13))
     const userType = trip.member_casual === 'member' ? 'member' : 'casual'
     hourTotals[hour][userType] += 1
@@ -184,6 +187,37 @@ assertCount('active stations', statusCount('active'), 107)
 assertCount('new stations', statusCount('new'), 1)
 assertCount('inactive stations', statusCount('inactive'), 3)
 
+// ---------- Daily trips and weather (cards above the map) ----------
+
+// Real weather for the trip year, and the forecast weather the model used for the forecast days.
+const weatherHourly = [
+  ...mapRows(readCsv('weather_hourly.csv'), ['temp', 'precip']),
+  ...mapRows(readCsv('weather_forecast_hourly.csv'), ['temp', 'precip']).map((row) => ({ ...row, forecast: true })),
+]
+const weatherByDate = new Map()
+for (const row of weatherHourly) {
+  const date = row.datetime_hour.slice(0, 10)
+  const day = weatherByDate.get(date) ?? { temps: [], precip: 0, forecast: Boolean(row.forecast) }
+  day.temps.push(row.temp)
+  day.precip += row.precip
+  weatherByDate.set(date, day)
+}
+const round1 = (value) => Math.round(value * 10) / 10
+const daily = [...weatherByDate.entries()]
+  .filter(([date]) => tripsByDate.has(date) || weatherByDate.get(date).forecast)
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([date, day]) => ({
+    date,
+    trips: tripsByDate.get(date) ?? null,
+    temp_mean: round1(day.temps.reduce((sum, value) => sum + value, 0) / day.temps.length),
+    temp_min: round1(Math.min(...day.temps)),
+    temp_max: round1(Math.max(...day.temps)),
+    precip_mm: round1(day.precip),
+    weather_source: day.forecast ? 'forecast' : 'archive',
+  }))
+assertCount('daily trip days', daily.filter((row) => row.trips !== null).length, tripsByDate.size)
+assertCount('daily trips sum', daily.reduce((sum, row) => sum + (row.trips ?? 0), 0), cleanRows)
+
 // ---------- Cleaning counts from the pipeline log ----------
 
 const qcText = fs.readFileSync(path.join(outputsDir, 'qc_log.txt'), 'utf8')
@@ -202,6 +236,7 @@ writeJson('profiles.json', profiles)
 writeJson('weatherEffect.json', weatherEffect)
 writeJson('userType.json', { byHour: hourTotals, totalTrips: cleanRows })
 writeJson('cleaning.json', { rawTrips: rawRows, steps: cleaningSteps })
+writeJson('daily.json', daily)
 
 const hourlyByStation = new Map()
 for (const row of hourly) {

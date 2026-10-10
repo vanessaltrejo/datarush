@@ -2,8 +2,8 @@
 
 import 'leaflet/dist/leaflet.css'
 import { useEffect } from 'react'
-import type { CircleMarker as LeafletCircleMarker } from 'leaflet'
-import { CircleMarker, MapContainer, Polyline, TileLayer, Tooltip, useMap } from 'react-leaflet'
+import { divIcon, type CircleMarker as LeafletCircleMarker } from 'leaflet'
+import { CircleMarker, MapContainer, Marker, Polyline, TileLayer, Tooltip, useMap } from 'react-leaflet'
 
 export interface MarkerSpec {
   key: string,
@@ -29,10 +29,20 @@ interface LeafletMapProps {
   // Stations that get a pulsing ring to show that they can be clicked.
   pulseKeys?: string[],
   onSelect?: (key: string) => void,
+  // Draw every station as a plain location pin, with no values (before a mode is chosen).
+  pinsOnly?: boolean,
   height: number | string,
 }
 
 const mapCenter: [number, number] = [40.723, -74.043]
+
+const pinIcon = divIcon({
+  className: '',
+  html: '<svg width="22" height="30" viewBox="0 0 24 32" aria-hidden="true"><path d="M12 31s10-11.2 10-19A10 10 0 0 0 2 12c0 7.8 10 19 10 19Z" fill="#015cab" stroke="#ffffff" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="#ffffff"/></svg>',
+  iconSize: [22, 30],
+  iconAnchor: [11, 30],
+  tooltipAnchor: [0, -28],
+})
 
 // Leaflet does not notice when its container changes size (for example in full screen).
 function ResizeSync() {
@@ -48,7 +58,7 @@ function ResizeSync() {
 
 // Base map tiles need internet. If they fail, markers still draw on the plain background.
 export default function LeafletMap({
-  markers, lines = [], selectedKey = null, pulseKeys = [], onSelect, height,
+  markers, lines = [], selectedKey = null, pulseKeys = [], onSelect, pinsOnly = false, height,
 }: LeafletMapProps) {
   return (
     <MapContainer
@@ -71,7 +81,12 @@ export default function LeafletMap({
           <Tooltip sticky>{line.tooltip}</Tooltip>
         </Polyline>
       ))}
-      {markers.filter((marker) => pulseKeys.includes(marker.key)).map((marker) => (
+      {pinsOnly && markers.map((marker) => (
+        <Marker key={`pin-${marker.key}`} position={[marker.lat, marker.lng]} icon={pinIcon}>
+          <Tooltip direction="top">{marker.tooltip}</Tooltip>
+        </Marker>
+      ))}
+      {!pinsOnly && markers.filter((marker) => pulseKeys.includes(marker.key)).map((marker) => (
         <CircleMarker
           key={`pulse-${marker.key}`}
           center={[marker.lat, marker.lng]}
@@ -81,7 +96,7 @@ export default function LeafletMap({
           pathOptions={{ color: '#015cab', weight: 3, fill: false }}
         />
       ))}
-      {markers.map((marker) => {
+      {!pinsOnly && markers.map((marker) => {
         const isSelected = marker.key === selectedKey
         const baseColor = isSelected ? '#111827' : marker.muted ? '#9ca3af' : '#4b5563'
         const baseWeight = isSelected ? 3 : 1

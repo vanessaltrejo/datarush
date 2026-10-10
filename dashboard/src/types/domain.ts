@@ -114,6 +114,17 @@ export interface CleaningSummary {
   steps: { rule: string, rows: number }[],
 }
 
+// One calendar day: real trips (null on forecast days) and the day's weather.
+export interface DailyPoint {
+  date: string,
+  trips: number | null,
+  tempMean: number,
+  tempMin: number,
+  tempMax: number,
+  precipMm: number,
+  weatherSource: 'archive' | 'forecast',
+}
+
 export interface DashboardData {
   stations: Station[],
   predictions: WindowPrediction[],
@@ -123,4 +134,5 @@ export interface DashboardData {
   weatherEffects: WeatherEffect[],
   userType: UserTypeSummary,
   cleaning: CleaningSummary,
+  daily: DailyPoint[],
 }

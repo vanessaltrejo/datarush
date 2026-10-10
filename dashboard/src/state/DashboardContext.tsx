@@ -7,6 +7,8 @@ import { datesForMode, topStationKey } from '@/lib/selectors'
 interface DashboardState {
   data: DashboardData,
   mode: DashboardMode,
+  // False until the user picks a mode. Until then the map shows only station pins.
+  modeChosen: boolean,
   date: string,
   window: WindowName,
   level: NeedLevel,
@@ -34,6 +36,7 @@ function defaultDate(dates: string[]): string {
 
 export function DashboardProvider({ data, children }: { data: DashboardData, children: ReactNode }) {
   const [mode, setModeState] = useState<DashboardMode>('backtest')
+  const [modeChosen, setModeChosen] = useState(false)
   const [window, setWindow] = useState<WindowName>('PM')
   const [level, setLevel] = useState<NeedLevel>('p90')
   const [backtestView, setBacktestView] = useState<BacktestView>('predicted')
@@ -44,10 +47,8 @@ export function DashboardProvider({ data, children }: { data: DashboardData, chi
   }), [data.predictions])
 
   const [date, setDate] = useState<string>(() => defaultDate(datesByMode.backtest))
-  // A station is in focus from the start: the one with the highest need on the default day.
-  const [selectedStationKey, setSelectedStationKey] = useState<string | null>(
-    () => topStationKey(data.predictions, 'backtest', defaultDate(datesByMode.backtest), 'PM', 'p90'),
-  )
+  // No station in focus until a mode is chosen. Then the one with the highest need gets the focus.
+  const [selectedStationKey, setSelectedStationKey] = useState<string | null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
 
   const focusStation = useCallback((stationKey: string) => {
@@ -58,14 +59,20 @@ export function DashboardProvider({ data, children }: { data: DashboardData, chi
   const openDetail = useCallback(() => setDetailOpen(true), [])
 
   const setMode = useCallback((nextMode: DashboardMode) => {
-    setModeState(nextMode)
     const nextDates = datesByMode[nextMode]
-    setDate(nextMode === 'forecast' ? nextDates[0] ?? '' : defaultDate(nextDates))
-  }, [datesByMode])
+    const nextDate = nextMode === 'forecast' ? nextDates[0] ?? '' : defaultDate(nextDates)
+    setModeState(nextMode)
+    setDate(nextDate)
+    if (!modeChosen) {
+      setModeChosen(true)
+      setSelectedStationKey((current) => current ?? topStationKey(data.predictions, nextMode, nextDate, window, level))
+    }
+  }, [datesByMode, modeChosen, data.predictions, window, level])
 
   const value = useMemo<DashboardState>(() => ({
     data,
     mode,
+    modeChosen,
     date,
     window,
     level,
@@ -81,7 +88,7 @@ export function DashboardProvider({ data, children }: { data: DashboardData, chi
     focusStation,
     closeDetail,
     openDetail,
-  }), [data, mode, date, window, level, backtestView, selectedStationKey, detailOpen, datesByMode, setMode, focusStation, closeDetail, openDetail])
+  }), [data, mode, modeChosen, date, window, level, backtestView, selectedStationKey, detailOpen, datesByMode, setMode, focusStation, closeDetail, openDetail])
 
   return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>
 }

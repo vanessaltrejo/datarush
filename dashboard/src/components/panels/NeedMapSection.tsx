@@ -8,6 +8,8 @@ import { Legend } from '@/components/map/Legend'
 import { FullscreenFrame } from '@/components/map/FullscreenFrame'
 import { Card, Note, Stat } from '@/components/layout/ui'
 import { NeedHeadline } from './NeedHeadline'
+import { NeedControls } from './NeedControls'
+import { DayTrendCards } from './DayTrendCards'
 import { StationFocusCard } from './StationFocusCard'
 import { diffColor, diffLegend, inactiveColor, needColor, needLegend } from '@/lib/colorScales'
 import { formatDateLong, formatInt, formatOneDecimal, formatPercent, formatSigned } from '@/lib/format'
@@ -19,7 +21,7 @@ function markerRadius(departures: number): number {
 }
 
 export function NeedMapSection() {
-  const { data, mode, date, window, level, backtestView, selectedStationKey, focusStation } = useDashboard()
+  const { data, mode, modeChosen, date, window, level, backtestView, selectedStationKey, focusStation } = useDashboard()
   const levelName = level === 'p90' ? 'protección alta (p90)' : 'protección media (p50)'
   const levelCoverage = level === 'p90' ? 'cubre 9 de cada 10 días' : 'cubre la mitad de los días'
   const hour = window === 'AM' ? '6:00' : '14:00'
@@ -91,76 +93,53 @@ export function NeedMapSection() {
   const mapSubtitle = `${formatDateLong(date)}. ${levelName[0].toUpperCase()}${levelName.slice(1)}: ${levelCoverage}. Tamaño del círculo: salidas esperadas.`
   const valueHeader = level === 'p90' ? 'Recomendado' : 'Típico'
 
+  const legendFooter = (
+    <Legend
+      title={backtestView === 'difference' && mode === 'backtest' ? 'Real menos predicho' : 'Bicis'}
+      items={backtestView === 'difference' && mode === 'backtest' ? diffLegend() : needLegend()}
+      extra={[
+        { label: 'Sin actividad reciente', color: inactiveColor, dashed: true },
+        { label: `Sin viajes este día (${missingCount})`, color: '#ffffff', dashed: true },
+      ]}
+    />
+  )
+  // Before a mode is chosen the map shows only where the stations are.
+  const pinMarkers: MarkerSpec[] = data.stations.map((station) => ({
+    key: station.stationKey, lat: station.lat, lng: station.lng, color: '', radius: 0, tooltip: station.name, muted: false,
+  }))
+  const shownMapTitle = modeChosen ? mapTitle : 'Estaciones de Citi Bike'
+  const shownMapSubtitle = modeChosen
+    ? mapSubtitle
+    : `${data.stations.length} estaciones en Jersey City y Hoboken. Elige un modo para ver cuántas bicis necesita cada una.`
+
   return (
     <div className="flex flex-col gap-4">
-      <NeedHeadline
-        mode={mode}
-        date={date}
-        window={window}
-        level={level}
-        totals={totals}
-        topName={topName}
-        topValue={topRow ? needValue(topRow, level) : null}
-      />
+      <DayTrendCards />
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Total en un día típico" value={formatInt(totals.typical)} hint="bicis en todo el sistema (p50)" />
-        <Stat label="Total recomendado" value={formatInt(totals.safe)} hint="bicis, cubre 9 de cada 10 días (p90)" tone="accent" />
-        {mode === 'backtest' && (
-          <>
-            <Stat label="Lo que de verdad se necesitó" value={formatInt(totals.actual)} hint="dato real de ese día" />
-            <Stat
-              label="Estaciones donde alcanzó"
-              value={formatPercent(totals.coveredShare, 0)}
-              hint="la recomendación fue suficiente"
-            />
-          </>
-        )}
-      </div>
-
-      {mode === 'forecast' && (
-        <Note>
-          Pronóstico precargado con el modelo de septiembre y el pronóstico del clima. No hay datos reales para
-          compararlo. La calidad del modelo se mide con los datos pasados de julio, agosto y septiembre.
-        </Note>
-      )}
-
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_400px]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
         <section className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900">{mapTitle}</h3>
-          <p className="mt-0.5 text-sm text-slate-500">{mapSubtitle}</p>
+          <h3 className="text-lg font-semibold text-slate-900">{shownMapTitle}</h3>
+          <p className="mt-0.5 text-sm text-slate-500">{shownMapSubtitle}</p>
           <div className="mt-4 flex min-h-0 flex-1 flex-col">
-            <FullscreenFrame
-              title={mapTitle}
-              subtitle={mapSubtitle}
-              footer={(
-                <Legend
-                  title={backtestView === 'difference' && mode === 'backtest' ? 'Real menos predicho' : 'Bicis'}
-                  items={backtestView === 'difference' && mode === 'backtest' ? diffLegend() : needLegend()}
-                  extra={[
-                    { label: 'Sin actividad reciente', color: inactiveColor, dashed: true },
-                    { label: `Sin viajes este día (${missingCount})`, color: '#ffffff', dashed: true },
-                  ]}
-                />
-              )}
-            >
+            <FullscreenFrame title={shownMapTitle} subtitle={shownMapSubtitle} footer={modeChosen ? legendFooter : null}>
               {(expanded) => (
                 // The map always fills this box. In the page it grows with the card, with a minimum height.
                 <div className={`relative flex-1 ${expanded ? 'min-h-0' : 'min-h-[520px]'}`}>
                   <ClientMap
-                    markers={markers}
+                    markers={modeChosen ? markers : pinMarkers}
+                    pinsOnly={!modeChosen}
                     selectedKey={selectedStationKey}
                     pulseKeys={mapHintSeen ? [] : topStations.slice(0, 3).map((row) => row.stationKey)}
-                    onSelect={handleSelect}
+                    onSelect={modeChosen ? handleSelect : undefined}
                     height="100%"
                   />
-                  {!mapHintSeen && (
+                  {(!modeChosen || !mapHintSeen) && (
                     <div className="pointer-events-none absolute left-1/2 top-4 z-[1000] -translate-x-1/2">
-                      <div className="hint-bob flex items-center gap-2 rounded-full bg-brand-700 px-4 py-2 text-sm font-bold text-white shadow-lg ring-4 ring-white/70">
+                      <div className="hint-bob flex items-center gap-2 whitespace-nowrap rounded-full bg-brand-700 px-4 py-2 text-sm font-bold text-white shadow-lg ring-4 ring-white/70">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                           <path d="M14 4.1 12 6M5.1 8l-2.9-.8M6 12l-1.9 2M7.2 2.2 8 5.1M9.04 9.69a.5.5 0 0 1 .65-.65l11 4.5a.5.5 0 0 1-.07.95l-4.35 1.04a1 1 0 0 0-.74.74l-1.04 4.35a.5.5 0 0 1-.95.07z" />
                         </svg>
-                        Haz clic en un círculo para ver esa estación
+                        {modeChosen ? 'Haz clic en un círculo para ver esa estación' : 'Elige un modo en Controles'}
                       </div>
                     </div>
                   )}
@@ -170,8 +149,52 @@ export function NeedMapSection() {
           </div>
         </section>
 
-        <div className="flex flex-col gap-4">
-          <StationFocusCard />
+        <NeedControls />
+      </div>
+
+      {!modeChosen ? (
+        <Card title="Recomendación">
+          <p className="text-sm text-slate-600">
+            Elige un modo en Controles: datos pasados para comparar con lo que pasó, o próximos días para el pronóstico.
+          </p>
+        </Card>
+      ) : (
+        <>
+          <section className="flex flex-col gap-4">
+            <h2 className="text-xl font-bold text-slate-900">Recomendación</h2>
+            <NeedHeadline
+              mode={mode}
+              date={date}
+              window={window}
+              level={level}
+              totals={totals}
+              topName={topName}
+              topValue={topRow ? needValue(topRow, level) : null}
+            />
+            {mode === 'forecast' && (
+              <Note>
+                Pronóstico con el modelo entrenado hasta septiembre y el pronóstico del clima. No hay datos reales para
+                compararlo. La calidad del modelo se mide con los datos pasados de julio, agosto y septiembre.
+              </Note>
+            )}
+            <div className="grid gap-4 lg:grid-cols-2">
+              <StationFocusCard />
+              <div className="grid grid-cols-2 content-start gap-3">
+                <Stat label="Total en un día típico" value={formatInt(totals.typical)} hint="bicis en todo el sistema (p50)" />
+                <Stat label="Total recomendado" value={formatInt(totals.safe)} hint="bicis, cubre 9 de cada 10 días (p90)" tone="accent" />
+                {mode === 'backtest' && (
+                  <>
+                    <Stat label="Lo que de verdad se necesitó" value={formatInt(totals.actual)} hint="dato real de ese día" />
+                    <Stat
+                      label="Estaciones donde alcanzó"
+                      value={formatPercent(totals.coveredShare, 0)}
+                      hint="la recomendación fue suficiente"
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+          </section>
 
           <Card title="Top 10 estaciones" subtitle={`Las que más bicis necesitan, ${levelName}. Haz clic para abrir el detalle.`}>
             <div className="flex items-center gap-3 px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -211,8 +234,8 @@ export function NeedMapSection() {
               })}
             </ol>
           </Card>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   )
 }

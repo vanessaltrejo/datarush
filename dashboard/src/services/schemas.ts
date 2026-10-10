@@ -107,6 +107,16 @@ export const userTypeSchema = z.object({
   totalTrips: z.number(),
 })
 
+export const rawDailySchema = z.object({
+  date: z.string(),
+  trips: z.number().nullable(),
+  temp_mean: z.number(),
+  temp_min: z.number(),
+  temp_max: z.number(),
+  precip_mm: z.number(),
+  weather_source: z.enum(['archive', 'forecast']),
+})
+
 export const cleaningSchema = z.object({
   rawTrips: z.number(),
   steps: z.array(z.object({ rule: z.string(), rows: z.number() })),

@@ -1,10 +1,10 @@
 import { z } from 'zod'
 import type {
-  CleaningSummary, DashboardData, HourlyPoint, MetricRow, ProfileRow, Route, Station,
+  CleaningSummary, DailyPoint, DashboardData, HourlyPoint, MetricRow, ProfileRow, Route, Station,
   UserTypeSummary, WeatherEffect, WindowPrediction,
 } from '@/types/domain'
 import {
-  cleaningSchema, rawHourlySchema, rawMetricSchema, rawPredictionSchema, rawProfileSchema,
+  cleaningSchema, rawDailySchema, rawHourlySchema, rawMetricSchema, rawPredictionSchema, rawProfileSchema,
   rawRouteSchema, rawStationSchema, rawWeatherEffectSchema, userTypeSchema,
 } from './schemas'
 
@@ -133,8 +133,20 @@ function toHourly(raw: z.output<typeof rawHourlySchema>): HourlyPoint {
   }
 }
 
+function toDaily(raw: z.output<typeof rawDailySchema>): DailyPoint {
+  return {
+    date: raw.date,
+    trips: raw.trips,
+    tempMean: raw.temp_mean,
+    tempMin: raw.temp_min,
+    tempMax: raw.temp_max,
+    precipMm: raw.precip_mm,
+    weatherSource: raw.weather_source,
+  }
+}
+
 export async function loadDashboardData(): Promise<DashboardData> {
-  const [stations, predictions, metrics, routes, profiles, weatherEffects, userType, cleaning] = await Promise.all([
+  const [stations, predictions, metrics, routes, profiles, weatherEffects, userType, cleaning, daily] = await Promise.all([
     loadValidated('stations.json', z.array(rawStationSchema)),
     loadValidated('predictions.json', z.array(rawPredictionSchema)),
     loadValidated('metrics.json', z.array(rawMetricSchema)),
@@ -143,6 +155,7 @@ export async function loadDashboardData(): Promise<DashboardData> {
     loadValidated('weatherEffect.json', z.array(rawWeatherEffectSchema)),
     loadValidated('userType.json', userTypeSchema),
     loadValidated('cleaning.json', cleaningSchema),
+    loadValidated('daily.json', z.array(rawDailySchema)),
   ])
   const userTypeSummary: UserTypeSummary = userType
   const cleaningSummary: CleaningSummary = cleaning
@@ -155,6 +168,7 @@ export async function loadDashboardData(): Promise<DashboardData> {
     weatherEffects: weatherEffects.map(toWeatherEffect),
     userType: userTypeSummary,
     cleaning: cleaningSummary,
+    daily: daily.map(toDaily),
   }
 }
 

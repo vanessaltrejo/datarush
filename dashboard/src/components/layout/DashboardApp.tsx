@@ -6,7 +6,6 @@ import { DashboardProvider } from '@/state/DashboardContext'
 import type { DashboardData } from '@/types/domain'
 import { LimitsDrawer } from './LimitsDrawer'
 import { Sidebar, type TabName } from './Sidebar'
-import { NeedControls } from '@/components/panels/NeedControls'
 import { NeedMapSection } from '@/components/panels/NeedMapSection'
 import { StationDrawer } from '@/components/panels/StationDrawer'
 import { DemandTab } from '@/components/panels/DemandTab'
@@ -98,10 +97,7 @@ function DashboardShell() {
 
         <main className="flex flex-col gap-4 px-4 py-6 sm:px-6">
           {tab === 'needs' && (
-            <>
-              <NeedControls />
-              <NeedMapSection />
-            </>
+            <NeedMapSection />
           )}
           {tab === 'demand' && <DemandTab />}
           {tab === 'quality' && <ModelQualityTab />}

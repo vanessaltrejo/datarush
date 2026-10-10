@@ -1,66 +1,87 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { useDashboard } from '@/state/DashboardContext'
-import { SegmentedControl } from '@/components/layout/ui'
 import { formatDateCompact } from '@/lib/format'
 import { modeLabels } from '@/lib/labels'
 import type { BacktestView, DashboardMode, NeedLevel, WindowName } from '@/types/domain'
 
+function Dropdown({ label, hint, children }: { label: string, hint?: string, children: ReactNode }) {
+  return (
+    <label className="flex flex-col gap-1">
+      <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</span>
+      {children}
+      {hint && <span className="text-xs text-slate-500">{hint}</span>}
+    </label>
+  )
+}
+
+const selectClass = 'w-full rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-sm font-medium text-slate-800 disabled:bg-slate-100 disabled:text-slate-400'
+
+// The map controls, one dropdown each, in a card beside the map.
 export function NeedControls() {
   const {
-    mode, setMode, date, setDate, availableDates, window, setWindow, level, setLevel, backtestView, setBacktestView,
+    mode, modeChosen, setMode, date, setDate, availableDates, window, setWindow, level, setLevel, backtestView, setBacktestView,
   } = useDashboard()
 
   return (
-    <div className="flex flex-wrap items-end gap-x-4 gap-y-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-      <SegmentedControl<DashboardMode>
+    <section className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h3 className="text-lg font-semibold text-slate-900">Controles</h3>
+
+      <Dropdown
         label="Modo"
-        value={mode}
-        onChange={setMode}
-        options={[
-          { value: 'backtest', label: modeLabels.backtest, hint: 'Compara lo que el modelo predijo con lo que de verdad pasó' },
-          { value: 'forecast', label: modeLabels.forecast, hint: 'Predicción para fechas futuras. No hay datos reales para comparar' },
-        ]}
-      />
-      <label className="flex flex-col gap-1">
-        <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Día</span>
+        hint={!modeChosen ? 'Elige un modo para ver las bicis necesarias en el mapa.'
+          : mode === 'backtest' ? 'Compara lo que el modelo predijo con lo que de verdad pasó.'
+            : 'Predicción para fechas futuras. No hay datos reales para comparar.'}
+      >
         <select
-          value={date}
-          onChange={(event) => setDate(event.target.value)}
-          className="rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-sm font-medium text-slate-800"
+          value={modeChosen ? mode : ''}
+          onChange={(event) => setMode(event.target.value as DashboardMode)}
+          className={`${selectClass} ${!modeChosen ? 'ring-2 ring-brand-700' : ''}`}
         >
+          {!modeChosen && <option value="" disabled>Elige un modo</option>}
+          <option value="backtest">{modeLabels.backtest}</option>
+          <option value="forecast">{modeLabels.forecast}</option>
+        </select>
+      </Dropdown>
+
+      <Dropdown label="Día">
+        <select value={date} onChange={(event) => setDate(event.target.value)} className={selectClass}>
           {availableDates.map((option) => (
             <option key={option} value={option}>{formatDateCompact(option)}</option>
           ))}
         </select>
-      </label>
-      <SegmentedControl<WindowName>
-        label="Horario"
-        value={window}
-        onChange={setWindow}
-        options={[{ value: 'AM', label: 'Mañana 6–12 h' }, { value: 'PM', label: 'Tarde 14–20 h' }]}
-      />
-      <SegmentedControl<NeedLevel>
+      </Dropdown>
+
+      <Dropdown label="Horario">
+        <select value={window} onChange={(event) => setWindow(event.target.value as WindowName)} className={selectClass}>
+          <option value="AM">Mañana 6–12 h</option>
+          <option value="PM">Tarde 14–20 h</option>
+        </select>
+      </Dropdown>
+
+      <Dropdown
         label="Protección"
-        value={level}
-        onChange={setLevel}
-        options={[
-          { value: 'p90', label: 'Alta (p90)', hint: 'La recomendación alcanza 9 de cada 10 días' },
-          { value: 'p50', label: 'Media (p50)', hint: 'La recomendación alcanza la mitad de los días' },
-        ]}
-      />
-      {mode === 'backtest' && (
-        <SegmentedControl<BacktestView>
-          label="Mostrar en el mapa"
+        hint={level === 'p90' ? 'La recomendación alcanza 9 de cada 10 días.' : 'La recomendación alcanza la mitad de los días.'}
+      >
+        <select value={level} onChange={(event) => setLevel(event.target.value as NeedLevel)} className={selectClass}>
+          <option value="p90">Alta (p90)</option>
+          <option value="p50">Media (p50)</option>
+        </select>
+      </Dropdown>
+
+      <Dropdown label="Mostrar en el mapa" hint={mode === 'forecast' ? 'Solo en datos pasados.' : undefined}>
+        <select
           value={backtestView}
-          onChange={setBacktestView}
-          options={[
-            { value: 'predicted', label: 'Predicho' },
-            { value: 'actual', label: 'Real' },
-            { value: 'difference', label: 'Diferencia' },
-          ]}
-        />
-      )}
-    </div>
+          onChange={(event) => setBacktestView(event.target.value as BacktestView)}
+          disabled={!modeChosen || mode !== 'backtest'}
+          className={selectClass}
+        >
+          <option value="predicted">Predicho</option>
+          <option value="actual">Real</option>
+          <option value="difference">Diferencia</option>
+        </select>
+      </Dropdown>
+    </section>
   )
 }
